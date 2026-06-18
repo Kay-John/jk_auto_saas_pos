@@ -11,8 +11,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .decorators import role_required
 from decimal import Decimal
-from .models import Product, ProductUnit, Branch, BranchStock, Supplier, StockTransaction, Sale, SaleItem, Tenant, UserProfile
-from .forms import TenantSignupForm
+from django.db.models import Sum, F
+from .models import Product, ProductUnit, Branch, BranchStock, Supplier, StockTransaction, Sale, SaleItem, Tenant, UserProfile, Expense
+from .forms import TenantSignupForm, ExpenseForm
 
 def signup_view(request):
     if request.user.is_authenticated:
@@ -56,7 +57,7 @@ def signup_view(request):
                     )
 
                     login(request, user)
-                    messages.success(request, "Welcome to your SaaS POS! Your 14-day free trial has begun. Let's start by adding your first product or supplier.")
+                    messages.success(request, "Welcome to JK-AutoPOS! Your 14-day free trial has begun. Let's start by adding your first product or supplier.")
                     return redirect('inventory_dashboard')
             except Exception as e:
                 form.add_error(None, f"An error occurred during provisioning: {str(e)}")
@@ -156,13 +157,57 @@ def inventory_dashboard(request):
             row['branch_stock'][branch.id] = stock_map.get((product.id, branch.id), 0)
         stock_grid.append(row)
 
+    # Expense Data
+    expenses = Expense.objects.filter(tenant=user.tenant)
+    if user.role != 'TENANT_ADMIN':
+        expenses = expenses.filter(branch=user.branch)
+
+    # Financial Stats (Simple COGS estimation - usually more complex)
+    # total_revenue = Sale.objects.filter(tenant=user.tenant)...
+    sales_qs = Sale.objects.filter(tenant=user.tenant)
+    if user.role != 'TENANT_ADMIN':
+        sales_qs = sales_qs.filter(branch=user.branch)
+
+    total_revenue = sales_qs.aggregate(total=Sum('total_amount'))['total'] or Decimal('0')
+    total_expenses = expenses.aggregate(total=Sum('amount'))['total'] or Decimal('0')
+
+    # Simple COGS - just for display - in real system would be based on StockTransactions IN price
+    # Let's assume a dummy 60% COGS for this milestone demo
+    cogs = total_revenue * Decimal('0.6')
+    net_profit = total_revenue - cogs - total_expenses
+
+    expense_form = ExpenseForm(user=user)
+
     return render(request, 'core/inventory.html', {
-        'products': products_page, # This is the paginated object
+        'products': products_page,
         'branches': branches,
         'suppliers': suppliers,
         'stock_grid': stock_grid,
-        'all_products': all_products_qs # Need full list for some dropdowns if needed, or just use page
+        'all_products': all_products_qs,
+        'expenses': expenses.order_by('-date')[:10],
+        'expense_form': expense_form,
+        'stats': {
+            'revenue': total_revenue,
+            'expenses': total_expenses,
+            'cogs': cogs,
+            'net_profit': net_profit
+        }
     })
+
+@login_required
+@role_required(['TENANT_ADMIN', 'BRANCH_MANAGER'])
+def log_expense(request):
+    if request.method == 'POST':
+        form = ExpenseForm(request.POST, user=request.user)
+        if form.is_valid():
+            expense = form.save(commit=False)
+            expense.tenant = request.user.tenant
+            expense.recorded_by = request.user
+            expense.save()
+            messages.success(request, "Expense recorded successfully.")
+        else:
+            messages.error(request, "Error recording expense.")
+    return redirect('inventory_dashboard')
 
 @login_required
 @role_required(['TENANT_ADMIN', 'BRANCH_MANAGER'])
@@ -282,7 +327,26 @@ def process_sale(request):
                     transaction_type='OUT'
                 )
 
-            return JsonResponse({'status': 'success', 'sale_id': str(sale.id)})
+            return JsonResponse({
+                'status': 'success',
+                'sale_id': str(sale.id),
+                'receipt_data': {
+                    'business_name': tenant.name,
+                    'branch_name': branch.name,
+                    'date': sale.created_at.strftime('%Y-%m-%d %H:%M'),
+                    'cashier': f"{user.first_name} {user.last_name}",
+                    'total': str(total_amount),
+                    'currency': tenant.currency,
+                    'payment_mode': sale.get_payment_mode_display(),
+                    'items': [
+                        {
+                            'name': str(item.product_unit),
+                            'qty': str(item.quantity),
+                            'price': str(item.unit_price)
+                        } for item in sale.items.all()
+                    ]
+                }
+            })
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 

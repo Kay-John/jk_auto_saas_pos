@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Management | POS</title>
+    <title>Inventory Management | JK-AutoPOS</title>
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
     <style>
         .container { padding: 30px; max-width: 1200px; margin: 0 auto; }
@@ -22,7 +22,7 @@
 </head>
 <body>
     <header>
-        <div class="logo">POS INVENTORY</div>
+        <div class="logo">JK-AutoPOS</div>
         <nav>
             <a href="{% url 'register_screen' %}" style="color: var(--text-main); margin-right: 20px;">Register</a>
             <button id="theme-toggle">Toggle Dark/Light Mode</button>
@@ -30,6 +30,22 @@
     </header>
 
     <div class="container">
+        <!-- Stats Overview -->
+        <div class="form-grid" style="margin-bottom: 30px;">
+            <div class="card" style="text-align: center;">
+                <h4 style="color: var(--contrast-light); opacity: 0.8;">Total Revenue</h4>
+                <h2 style="color: #494A20;">{{ stats.revenue }} {{ user.tenant.currency }}</h2>
+            </div>
+            <div class="card" style="text-align: center;">
+                <h4 style="color: var(--contrast-light); opacity: 0.8;">Total Expenses</h4>
+                <h2 style="color: var(--modifier-secondary);">{{ stats.expenses }} {{ user.tenant.currency }}</h2>
+            </div>
+            <div class="card" style="text-align: center;">
+                <h4 style="color: var(--contrast-light); opacity: 0.8;">Est. Net Profit</h4>
+                <h2 style="color: var(--accent-primary);">{{ stats.net_profit }} {{ user.tenant.currency }}</h2>
+            </div>
+        </div>
+
         {% if messages %}
         <div class="messages">
             {% for message in messages %}
@@ -157,6 +173,61 @@
                             {% endfor %}
                         </td>
                     </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Expense Tracking -->
+        <div class="card">
+            <h2>Record Operational Expense</h2>
+            <form action="{% url 'log_expense' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-grid">
+                    <div class="form-group">
+                        {{ expense_form.branch.label_tag }}
+                        {{ expense_form.branch }}
+                    </div>
+                    <div class="form-group">
+                        {{ expense_form.category.label_tag }}
+                        {{ expense_form.category }}
+                    </div>
+                    <div class="form-group">
+                        {{ expense_form.amount.label_tag }}
+                        {{ expense_form.amount }}
+                    </div>
+                    <div class="form-group">
+                        {{ expense_form.date.label_tag }}
+                        {{ expense_form.date }}
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 10px;">
+                    {{ expense_form.description.label_tag }}
+                    {{ expense_form.description }}
+                </div>
+                <button type="submit" class="btn-submit" style="background-color: var(--accent-primary);">Log Expense</button>
+            </form>
+
+            <h3 style="margin-top: 30px;">Recent Expenses</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Branch</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in expenses %}
+                    <tr>
+                        <td>{{ expense.date }}</td>
+                        <td>{{ expense.branch.name }}</td>
+                        <td>{{ expense.get_category_display }}</td>
+                        <td>{{ expense.amount }} {{ user.tenant.currency }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4">No expenses recorded yet.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>

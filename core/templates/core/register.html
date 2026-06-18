@@ -5,9 +5,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cashier Register | POS</title>
+    <title>Cashier Register | JK-AutoPOS</title>
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
     <style>
+        @media print {
+            body * { visibility: hidden !important; background: white !important; color: black !important; }
+            #receipt-modal, #receipt-modal * { visibility: visible !important; }
+            #receipt-modal { position: absolute; left: 0; top: 0; width: 100%; background: white !important; display: flex !important; }
+            .no-print { display: none !important; }
+            #thermal-receipt { width: 100%; border: none; padding: 0; }
+        }
         .badge {
             padding: 4px 10px;
             border-radius: 20px;
@@ -20,7 +27,7 @@
 </head>
 <body>
     <header>
-        <div class="logo">POS SYSTEM</div>
+        <div class="logo">JK-AutoPOS</div>
         <div class="header-actions" style="display: flex; align-items: center; gap: 15px;">
             <div id="sync-status" style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
                 <span id="sync-badge" class="badge">Checking...</span>
@@ -32,6 +39,41 @@
 
     <div class="main-container">
         {% csrf_token %}
+
+        <!-- Receipt Modal -->
+        <div id="receipt-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center;">
+            <div id="thermal-receipt" style="background: white; color: black; padding: 20px; width: 300px; font-family: 'Courier New', Courier, monospace; font-size: 14px;">
+                <div style="text-align: center; border-bottom: 1px dashed black; padding-bottom: 10px;">
+                    <h3 id="rcpt-biz-name" style="margin: 0;">Business Name</h3>
+                    <div id="rcpt-branch">Branch</div>
+                </div>
+                <div style="padding: 10px 0; font-size: 12px;">
+                    <div>Date: <span id="rcpt-date"></span></div>
+                    <div>Cashier: <span id="rcpt-cashier"></span></div>
+                </div>
+                <table style="width: 100%; border-bottom: 1px dashed black; padding-bottom: 10px;">
+                    <thead>
+                        <tr style="text-align: left; font-size: 12px;">
+                            <th>Item</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rcpt-items">
+                    </tbody>
+                </table>
+                <div style="padding-top: 10px; font-weight: bold; text-align: right;">
+                    TOTAL: <span id="rcpt-total"></span> <span id="rcpt-currency"></span>
+                </div>
+                <div style="text-align: center; margin-top: 20px; border-top: 1px dashed black; padding-top: 10px;">
+                    THANK YOU FOR SHOPPING!
+                </div>
+                <div class="no-print" style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button onclick="window.print()" style="flex: 1; padding: 10px; background: #494A20; color: white; border: none; cursor: pointer;">🖨️ Print Receipt</button>
+                    <button onclick="document.getElementById('receipt-modal').style.display='none'" style="flex: 1; padding: 10px; background: #842400; color: white; border: none; cursor: pointer;">Close</button>
+                </div>
+            </div>
+        </div>
         <div class="left-panel">
             <input type="text" class="search-box" id="product-search" placeholder="Search products (Barcode or Name)...">
             <div class="product-grid" id="product-grid">

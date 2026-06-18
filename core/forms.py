@@ -1,5 +1,24 @@
 from django import forms
-from .models import Tenant
+from .models import Tenant, Expense
+
+class ExpenseForm(forms.ModelForm):
+    class Meta:
+        model = Expense
+        fields = ['branch', 'category', 'amount', 'date', 'description']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'description': forms.Textarea(attrs={'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user:
+            # Sandbox branch choices based on user role
+            if user.role == 'TENANT_ADMIN':
+                self.fields['branch'].queryset = user.tenant.branches.all()
+            else:
+                self.fields['branch'].queryset = user.tenant.branches.filter(id=user.branch_id)
 
 class TenantSignupForm(forms.Form):
     CURRENCY_CHOICES = [

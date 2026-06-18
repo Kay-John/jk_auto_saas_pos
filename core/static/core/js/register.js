@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(res => {
             if (res.status === 'success') {
-                alert('Transaction Saved Online! Sale ID: ' + res.sale_id);
+                showReceipt(res.receipt_data);
                 finalizeSale();
             } else {
                 alert('Server Error: ' + res.message + '. Saving offline instead.');
@@ -293,6 +293,31 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('IndexedDB Error:', e);
             alert('Critical Error: Could not save offline.');
         };
+    }
+
+    function showReceipt(data) {
+        if (!data) return;
+        document.getElementById('rcpt-biz-name').innerText = data.business_name;
+        document.getElementById('rcpt-branch').innerText = data.branch_name;
+        document.getElementById('rcpt-date').innerText = data.date;
+        document.getElementById('rcpt-cashier').innerText = data.cashier;
+        document.getElementById('rcpt-total').innerText = data.total;
+        document.getElementById('rcpt-currency').innerText = data.currency;
+
+        const itemsBody = document.getElementById('rcpt-items');
+        itemsBody.innerHTML = '';
+        data.items.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.style.fontSize = '12px';
+            tr.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.qty}</td>
+                <td style="text-align: right;">${item.price}</td>
+            `;
+            itemsBody.appendChild(tr);
+        });
+
+        document.getElementById('receipt-modal').style.display = 'flex';
     }
 
     function finalizeSale() {

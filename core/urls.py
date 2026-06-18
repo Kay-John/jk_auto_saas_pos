@@ -9,4 +9,5 @@ urlpatterns = [
     path('process-sale/', views.process_sale, name='process_sale'),
     path('inventory/', views.inventory_dashboard, name='inventory_dashboard'),
     path('inventory/stock-in/', views.stock_intake, name='stock_intake'),
+    path('inventory/log-expense/', views.log_expense, name='log_expense'),
 ]
