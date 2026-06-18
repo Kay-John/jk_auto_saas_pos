@@ -22,11 +22,22 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     brand = models.CharField(max_length=255, blank=True)
     category = models.CharField(max_length=255, blank=True)
-    barcode = models.CharField(max_length=100, unique=True)
+    barcode = models.CharField(max_length=100)
     low_stock_threshold = models.PositiveIntegerField(default=10)
+
+    class Meta:
+        unique_together = ('tenant', 'barcode')
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        # Auto-calculate low stock threshold if not manually set or as a basic logic
+        # For now, let's say it defaults to 10% of some average monthly volume (placeholder logic)
+        # Or just ensure it's at least 5
+        if not self.low_stock_threshold:
+            self.low_stock_threshold = 5
+        super().save(*args, **kwargs)
 
 class ProductUnit(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='units')
@@ -38,13 +49,37 @@ class ProductUnit(models.Model):
     def __str__(self):
         return f"{self.product.name} ({self.unit_name})"
 
+class Supplier(models.Model):
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    contact_info = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.name
+
 class BranchStock(models.Model):
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='stocks')
-    product_unit = models.ForeignKey(ProductUnit, on_delete=models.CASCADE)
-    quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='branch_stocks')
+    quantity = models.DecimalField(max_digits=15, decimal_places=2, default=0.0) # Quantity in base units
 
     class Meta:
-        unique_together = ('branch', 'product_unit')
+        unique_together = ('branch', 'product')
+
+class StockTransaction(models.Model):
+    TRANSACTION_TYPES = [
+        ('IN', 'Stock In'),
+        ('OUT', 'Stock Out'),
+        ('ADJUST', 'Adjustment'),
+    ]
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product_unit = models.ForeignKey(ProductUnit, on_delete=models.SET_NULL, null=True)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2) # Quantity in the selected unit
+    quantity_base = models.DecimalField(max_digits=15, decimal_places=2) # Calculated quantity in base units
+    transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
+    supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True)
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class Sale(models.Model):
     PAYMENT_MODES = [

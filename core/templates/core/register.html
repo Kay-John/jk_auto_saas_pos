@@ -16,6 +16,7 @@
     </header>
 
     <div class="main-container">
+        {% csrf_token %}
         <div class="left-panel">
             <input type="text" class="search-box" id="product-search" placeholder="Search products (Barcode or Name)...">
             <div class="product-grid" id="product-grid">

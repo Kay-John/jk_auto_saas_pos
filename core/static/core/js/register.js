@@ -189,8 +189,47 @@ document.addEventListener('DOMContentLoaded', () => {
     discountInput.addEventListener('input', updateGrandTotal);
 
     document.getElementById('save-print').addEventListener('click', () => {
-        alert('Transaction Saved & Printing Receipt...');
-        cart = [];
-        renderCart();
+        if (cart.length === 0) {
+            alert('Cart is empty!');
+            return;
+        }
+
+        const data = {
+            cart: cart.map(item => ({
+                unit_id: item.unitId,
+                quantity: item.quantity,
+                price: item.price
+            })),
+            payment_mode: document.getElementById('payment-mode').value,
+            status: document.getElementById('transaction-status').value,
+            discount: parseFloat(discountInput.value) || 0,
+            total: parseFloat(grandTotalEl.innerText)
+        };
+
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch('/process-sale/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(res => {
+            if (res.status === 'success') {
+                alert('Transaction Saved! Sale ID: ' + res.sale_id);
+                cart = [];
+                discountInput.value = 0;
+                renderCart();
+            } else {
+                alert('Error saving transaction: ' + res.message);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Error connecting to server.');
+        });
     });
 });
