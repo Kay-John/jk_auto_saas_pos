@@ -1,0 +1,186 @@
+:root {
+    --bg-primary: #2C1A11;
+    --card-surface: #3A281E;
+    --accent-primary: #BF6D00;
+    --modifier-secondary: #842400;
+    --action-trigger: #494A20;
+    --contrast-light: #FAF7F2;
+    --text-main: #FAF7F2;
+    --input-bg: #FAF7F2;
+}
+
+[data-theme="light"] {
+    --bg-primary: #FAF7F2;
+    --card-surface: #FFFFFF;
+    --accent-primary: #BF6D00;
+    --modifier-secondary: #842400;
+    --action-trigger: #494A20;
+    --contrast-light: #2C1A11;
+    --text-main: #2C1A11;
+    --input-bg: #FFFFFF;
+}
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    height: 60px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--card-surface);
+}
+
+.main-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Left Panel */
+.left-panel {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-right: 1px solid var(--card-surface);
+}
+
+.search-box {
+    background-color: var(--input-bg);
+    color: #2C1A11;
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    width: 100%;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+    overflow-y: auto;
+}
+
+.product-card {
+    background-color: var(--card-surface);
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.product-card:hover {
+    transform: scale(1.02);
+}
+
+.price-pills {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.unit-pill {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    background-color: rgba(250, 247, 242, 0.1);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.unit-pill.active {
+    background-color: var(--accent-primary);
+    color: white;
+}
+
+.price-display {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.pill {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.pill-retail { background-color: var(--accent-primary); color: white; }
+.pill-wholesale { background-color: var(--modifier-secondary); color: white; }
+
+/* Right Panel */
+.right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--card-surface);
+    padding: 20px;
+}
+
+.cart-items {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(250, 247, 242, 0.1);
+}
+
+.cart-summary {
+    border-top: 2px solid var(--accent-primary);
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.footer-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-primary {
+    background-color: var(--action-trigger);
+    color: #FAF7F2;
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    flex: 1;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+select, input[type="number"] {
+    background-color: var(--input-bg);
+    color: #2C1A11;
+    border: none;
+    padding: 5px;
+    border-radius: 4px;
+}

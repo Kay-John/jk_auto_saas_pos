@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashier Register | POS</title>
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+</head>
+<body>
+    <header>
+        <div class="logo">POS SYSTEM</div>
+        <div class="header-actions">
+            <button id="theme-toggle">Toggle Dark/Light Mode</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="left-panel">
+            <input type="text" class="search-box" id="product-search" placeholder="Search products (Barcode or Name)...">
+            <div class="product-grid" id="product-grid">
+                {% for product in products %}
+                <div class="product-card"
+                     data-name="{{ product.name }}"
+                     data-barcode="{{ product.barcode }}"
+                     data-id="{{ product.id }}">
+                    <div class="product-info">
+                        <strong>{{ product.name }}</strong>
+                        <div class="stock-warning" style="color: var(--modifier-secondary); font-size: 0.8rem;">
+                            Low Stock (Threshold: {{ product.low_stock_threshold }})
+                        </div>
+                    </div>
+                    <div class="unit-selector-pills">
+                        {% for unit in product.units.all %}
+                        <div class="unit-pill"
+                             data-unit-id="{{ unit.id }}"
+                             data-unit-name="{{ unit.unit_name }}"
+                             data-retail-price="{{ unit.retail_price }}"
+                             data-wholesale-price="{{ unit.wholesale_price }}">
+                            {{ unit.unit_name }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="price-display">
+                        <span class="pill pill-retail">Retail: <span class="retail-val">-</span></span>
+                        <span class="pill pill-wholesale">Wholesale: <span class="wholesale-val">-</span></span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <h2>Active Cart</h2>
+            <div class="cart-items" id="cart-items">
+                <!-- Cart items will be injected here by JS -->
+            </div>
+
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal">0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Discount</span>
+                    <input type="number" id="discount" value="0" step="0.01">
+                </div>
+                <div class="summary-row">
+                    <span>Total</span>
+                    <span id="grand-total">0.00</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Payment Mode:</label>
+                    <select id="payment-mode">
+                        <option value="CASH">Cash</option>
+                        <option value="MOBILE_MONEY">Mobile Money</option>
+                        <option value="CARD">Card</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Status:</label>
+                    <select id="transaction-status">
+                        <option value="PAID">Paid</option>
+                        <option value="CREDIT">Credit</option>
+                    </select>
+                </div>
+
+                <div class="footer-actions">
+                    <button class="btn-primary" id="save-print">Save & Print Receipt</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inline raw data for JS to handle units switching easily
+        const productsData = {
+            {% for product in products %}
+            "{{ product.id }}": {
+                "name": "{{ product.name }}",
+                "units": [
+                    {% for unit in product.units.all %}
+                    {
+                        "id": "{{ unit.id }}",
+                        "name": "{{ unit.unit_name }}",
+                        "retail": {{ unit.retail_price }},
+                        "wholesale": {{ unit.wholesale_price }}
+                    },
+                    {% endfor %}
+                ]
+            },
+            {% endfor %}
+        };
+    </script>
+    <script src="{% static 'core/js/register.js' %}"></script>
+</body>
+</html>
