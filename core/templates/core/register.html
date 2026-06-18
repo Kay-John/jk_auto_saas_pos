@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -6,11 +7,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cashier Register | POS</title>
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <style>
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .badge-online { background-color: #494A20; color: #FAF7F2; } /* 🟢 Cloud Active */
+        .badge-offline { background-color: #BF6D00; color: #FAF7F2; } /* 🟡 Offline Storage Mode */
+    </style>
 </head>
 <body>
     <header>
         <div class="logo">POS SYSTEM</div>
-        <div class="header-actions">
+        <div class="header-actions" style="display: flex; align-items: center; gap: 15px;">
+            <div id="sync-status" style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <span id="sync-badge" class="badge">Checking...</span>
+                <input type="checkbox" id="offline-toggle" style="width: auto;">
+            </div>
             <button id="theme-toggle">Toggle Dark/Light Mode</button>
         </div>
     </header>

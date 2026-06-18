@@ -221,6 +221,12 @@ def process_sale(request):
         try:
             user = request.user
             data = json.loads(request.body)
+            sale_id = data.get('id')
+
+            # Check for existing sale to prevent double-syncing
+            if sale_id and Sale.objects.filter(id=sale_id).exists():
+                 return JsonResponse({'status': 'success', 'sale_id': str(sale_id), 'note': 'Duplicate ignored'})
+
             cart = data.get('cart', [])
             payment_mode = data.get('payment_mode', 'CASH')
             discount = Decimal(str(data.get('discount', 0)))
@@ -234,6 +240,7 @@ def process_sale(request):
                  return JsonResponse({'status': 'error', 'message': 'User not assigned to a branch/tenant'}, status=400)
 
             sale = Sale.objects.create(
+                id=sale_id if sale_id else uuid.uuid4(),
                 tenant=tenant,
                 branch=branch,
                 payment_mode=payment_mode,

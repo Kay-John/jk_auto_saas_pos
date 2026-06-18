@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('theme-toggle');
+    const offlineToggle = document.getElementById('offline-toggle');
+    const syncBadge = document.getElementById('sync-badge');
     const htmlElement = document.documentElement;
     const searchInput = document.getElementById('product-search');
     const productGrid = document.getElementById('product-grid');
@@ -9,6 +11,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const discountInput = document.getElementById('discount');
 
     let cart = [];
+    let db;
+
+    // Initialize IndexedDB
+    const request = indexedDB.open('POS_Offline_DB', 1);
+    request.onupgradeneeded = (e) => {
+        db = e.target.result;
+        if (!db.objectStoreNames.contains('sales')) {
+            db.createObjectStore('sales', { keyPath: 'id' });
+        }
+    };
+    request.onsuccess = (e) => {
+        db = e.target.result;
+        console.log('IndexedDB Initialized');
+        checkReconciliation();
+    };
+
+    // Offline Toggle Logic
+    const savedMode = localStorage.getItem('pos_mode') || 'online';
+    offlineToggle.checked = savedMode === 'offline';
+    updateSyncUI();
+
+    offlineToggle.addEventListener('change', () => {
+        const mode = offlineToggle.checked ? 'offline' : 'online';
+        localStorage.setItem('pos_mode', mode);
+        updateSyncUI();
+        if (mode === 'online') checkReconciliation();
+    });
+
+    function updateSyncUI() {
+        if (offlineToggle.checked) {
+            syncBadge.innerText = '🟡 Offline Storage Mode';
+            syncBadge.className = 'badge badge-offline';
+        } else {
+            syncBadge.innerText = '🟢 Cloud Active';
+            syncBadge.className = 'badge badge-online';
+        }
+    }
 
     // Initialize product cards with first unit prices
     document.querySelectorAll('.product-card').forEach(card => {
@@ -194,7 +233,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const saleId = crypto.randomUUID();
         const data = {
+            id: saleId,
             cart: cart.map(item => ({
                 unit_id: item.unitId,
                 quantity: item.quantity,
@@ -206,8 +247,15 @@ document.addEventListener('DOMContentLoaded', () => {
             total: parseFloat(grandTotalEl.innerText)
         };
 
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        if (offlineToggle.checked) {
+            saveOffline(data);
+        } else {
+            processOnline(data);
+        }
+    });
 
+    function processOnline(data) {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         fetch('/process-sale/', {
             method: 'POST',
             headers: {
@@ -219,17 +267,80 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(res => {
             if (res.status === 'success') {
-                alert('Transaction Saved! Sale ID: ' + res.sale_id);
-                cart = [];
-                discountInput.value = 0;
-                renderCart();
+                alert('Transaction Saved Online! Sale ID: ' + res.sale_id);
+                finalizeSale();
             } else {
-                alert('Error saving transaction: ' + res.message);
+                alert('Server Error: ' + res.message + '. Saving offline instead.');
+                saveOffline(data);
             }
         })
         .catch(err => {
-            console.error(err);
-            alert('Error connecting to server.');
+            console.error('Network error:', err);
+            alert('Connection Lost. Saving transaction offline.');
+            saveOffline(data);
         });
-    });
+    }
+
+    function saveOffline(data) {
+        const transaction = db.transaction(['sales'], 'readwrite');
+        const store = transaction.objectStore('sales');
+        store.add(data);
+        transaction.oncomplete = () => {
+            alert('Transaction Saved Locally (Offline Mode).');
+            finalizeSale();
+        };
+        transaction.onerror = (e) => {
+            console.error('IndexedDB Error:', e);
+            alert('Critical Error: Could not save offline.');
+        };
+    }
+
+    function finalizeSale() {
+        cart = [];
+        discountInput.value = 0;
+        renderCart();
+    }
+
+    async function checkReconciliation() {
+        if (offlineToggle.checked || !db) return;
+
+        const transaction = db.transaction(['sales'], 'readonly');
+        const store = transaction.objectStore('sales');
+        const allSales = store.getAll();
+
+        allSales.onsuccess = async () => {
+            const sales = allSales.result;
+            if (sales.length === 0) return;
+
+            console.log(`Reconciling ${sales.length} offline transactions...`);
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            for (const sale of sales) {
+                try {
+                    const response = await fetch('/process-sale/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken
+                        },
+                        body: JSON.stringify(sale)
+                    });
+                    const res = await response.json();
+                    if (res.status === 'success') {
+                        // Success, remove from IndexedDB
+                        const delTx = db.transaction(['sales'], 'readwrite');
+                        delTx.objectStore('sales').delete(sale.id);
+                        console.log(`Synced Sale ${sale.id}`);
+                    }
+                } catch (err) {
+                    console.error('Reconciliation failed for sale:', sale.id, err);
+                    break; // Stop loop if network is still down
+                }
+            }
+            console.log('Reconciliation complete/paused.');
+        };
+    }
+
+    // Auto-check reconciliation when window comes back online
+    window.addEventListener('online', checkReconciliation);
 });
