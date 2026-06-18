@@ -30,6 +30,44 @@
     </header>
 
     <div class="container">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="card" style="background-color: var(--modifier-secondary); color: white; padding: 15px; border-left: 5px solid white;">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Dashboard Filters -->
+        <div class="card">
+            <h2>Inventory Dashboard Filters</h2>
+            <form method="GET" action="{% url 'inventory_dashboard' %}">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Filter by Branch</label>
+                        <select name="branch_filter">
+                            <option value="">All Branches</option>
+                            {% for branch in branches %}
+                            <option value="{{ branch.id }}" {% if request.GET.branch_filter == branch.id|stringformat:"i" %}selected{% endif %}>{{ branch.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Search Product</label>
+                        <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Name or Barcode...">
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <input type="text" name="category" value="{{ request.GET.category }}" placeholder="Search category...">
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit" style="background-color: var(--action-trigger);">Apply Filters</button>
+                <a href="{% url 'inventory_dashboard' %}" style="color: var(--accent-primary); margin-left: 15px; text-decoration: none;">Reset</a>
+            </form>
+        </div>
+
         <!-- Stock Intake Form -->
         <div class="card">
             <h2>Stock Intake (Stock In)</h2>

@@ -4,6 +4,9 @@ from django.contrib.auth.models import AbstractUser
 
 class Tenant(models.Model):
     name = models.CharField(max_length=255)
+    currency = models.CharField(max_length=10, default='USD')
+    subscription_status = models.CharField(max_length=20, default='trial')
+    trial_ends_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -1,13 +1,69 @@
 import json
+from datetime import timedelta
+from django.utils import timezone
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.db import transaction
+from django.contrib import messages
 from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .decorators import role_required
 from decimal import Decimal
-from .models import Product, ProductUnit, Branch, BranchStock, Supplier, StockTransaction, Sale, SaleItem, Tenant
+from .models import Product, ProductUnit, Branch, BranchStock, Supplier, StockTransaction, Sale, SaleItem, Tenant, UserProfile
+from .forms import TenantSignupForm
+
+def signup_view(request):
+    if request.user.is_authenticated:
+        return redirect_user_by_role(request.user)
+
+    if request.method == 'POST':
+        form = TenantSignupForm(request.POST)
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    # 1. Create Tenant
+                    tenant = Tenant.objects.create(
+                        name=form.cleaned_data['business_name'],
+                        currency=form.cleaned_data['currency'],
+                        subscription_status='trial',
+                        trial_ends_at=timezone.now() + timedelta(days=14)
+                    )
+
+                    # 2. Create Default Branch
+                    branch = Branch.objects.create(
+                        tenant=tenant,
+                        name=f"{tenant.name} Head Office"
+                    )
+
+                    # 3. Create Admin User
+                    # Splitting full name into first/last for AbstractUser compatibility
+                    full_name = form.cleaned_data['admin_full_name']
+                    name_parts = full_name.split(' ', 1)
+                    first_name = name_parts[0]
+                    last_name = name_parts[1] if len(name_parts) > 1 else ""
+
+                    user = UserProfile.objects.create_user(
+                        username=form.cleaned_data['email'], # Using email as username
+                        email=form.cleaned_data['email'],
+                        password=form.cleaned_data['password'],
+                        first_name=first_name,
+                        last_name=last_name,
+                        role='TENANT_ADMIN',
+                        tenant=tenant,
+                        branch=branch
+                    )
+
+                    login(request, user)
+                    messages.success(request, "Welcome to your SaaS POS! Your 14-day free trial has begun. Let's start by adding your first product or supplier.")
+                    return redirect('inventory_dashboard')
+            except Exception as e:
+                form.add_error(None, f"An error occurred during provisioning: {str(e)}")
+    else:
+        form = TenantSignupForm()
+
+    return render(request, 'core/signup.html', {'form': form})
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -68,6 +124,14 @@ def inventory_dashboard(request):
         branches = Branch.objects.filter(id=user.branch_id)
         all_products_qs = Product.objects.filter(tenant=user.tenant).prefetch_related('units', 'branch_stocks')
         suppliers = Supplier.objects.filter(tenant=user.tenant)
+
+    # Apply Global Search Filters
+    q = request.GET.get('q')
+    category = request.GET.get('category')
+    if q:
+        all_products_qs = all_products_qs.filter(Q(name__icontains=q) | Q(barcode__icontains=q))
+    if category:
+        all_products_qs = all_products_qs.filter(category__icontains=category)
 
     # Pagination for Product Catalog
     paginator = Paginator(all_products_qs, 10) # 10 products per page
