@@ -27,9 +27,13 @@
                      data-id="{{ product.id }}">
                     <div class="product-info">
                         <strong>{{ product.name }}</strong>
+                        {% with stock=branch_stock_map|dict_get:product.id %}
+                        {% if stock < product.low_stock_threshold %}
                         <div class="stock-warning" style="color: var(--modifier-secondary); font-size: 0.8rem;">
-                            Low Stock (Threshold: {{ product.low_stock_threshold }})
+                            Low Stock (Current: {{ stock|default:0 }})
                         </div>
+                        {% endif %}
+                        {% endwith %}
                     </div>
                     <div class="unit-selector-pills">
                         {% for unit in product.units.all %}

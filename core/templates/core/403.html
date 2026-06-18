@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 Access Denied | POS</title>
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            text-align: center;
+        }
+        .error-container {
+            background-color: var(--card-surface);
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-width: 500px;
+        }
+        h1 {
+            color: var(--modifier-secondary);
+            font-size: 4rem;
+            margin: 0;
+        }
+        h2 {
+            margin-top: 10px;
+            color: var(--accent-primary);
+        }
+        p {
+            margin: 20px 0 30px;
+            line-height: 1.6;
+        }
+        .btn-back {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--accent-primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <h1>403</h1>
+        <h2>Access Denied</h2>
+        <p>You do not have the required permissions to access this administrative module. This attempt has been logged for security monitoring.</p>
+        <a href="{% url 'login' %}" class="btn-back">Back to Secure Portal</a>
+    </div>
+</body>
+</html>
