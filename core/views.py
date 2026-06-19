@@ -1,4 +1,5 @@
 import json
+import uuid
 from datetime import timedelta
 from django.utils import timezone
 from django.db.models import Q
@@ -14,6 +15,11 @@ from decimal import Decimal
 from django.db.models import Sum, F
 from .models import Product, ProductUnit, Branch, BranchStock, Supplier, StockTransaction, Sale, SaleItem, Tenant, UserProfile, Expense
 from .forms import TenantSignupForm, ExpenseForm
+
+def landing_page(request):
+    if request.user.is_authenticated:
+        return redirect_user_by_role(request.user)
+    return render(request, 'core/landing.html')
 
 def signup_view(request):
     if request.user.is_authenticated:
