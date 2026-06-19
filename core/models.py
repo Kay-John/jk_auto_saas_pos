@@ -47,6 +47,7 @@ class ProductUnit(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='units')
     unit_name = models.CharField(max_length=50)  # e.g., Piece, Box, Carton
     conversion_factor = models.DecimalField(max_digits=10, decimal_places=2, default=1.0) # conversion to base unit
+    buying_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     retail_price = models.DecimalField(max_digits=10, decimal_places=2)
     wholesale_price = models.DecimalField(max_digits=10, decimal_places=2)
 

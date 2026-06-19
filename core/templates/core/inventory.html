@@ -58,6 +58,66 @@
         {% endif %}
 
         <!-- Dashboard Filters -->
+        <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+            <h1 style="margin: 0;">Inventory Management</h1>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-submit" style="margin: 0; background-color: var(--action-trigger);" onclick="document.getElementById('add-product-modal').style.display='block'">+ Add New Product</button>
+                <button class="btn-submit" style="margin: 0; background-color: var(--accent-primary);" onclick="document.getElementById('import-modal').style.display='block'">Bulk Import (Excel)</button>
+            </div>
+        </div>
+
+        <!-- Add Product Modal -->
+        <div id="add-product-modal" class="card" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000; box-shadow: 0 0 20px rgba(0,0,0,0.5); width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Add New Product</h2>
+                <button onclick="document.getElementById('add-product-modal').style.display='none'" style="background: none; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <form action="{% url 'add_product' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Product Name</label>
+                    <input type="text" name="name" required placeholder="e.g. Engine Oil 5W30">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Barcode / SKU</label>
+                    <input type="text" name="barcode" required placeholder="Scan or type barcode">
+                </div>
+                <div class="form-grid" style="margin-bottom: 15px;">
+                    <div class="form-group">
+                        <label>Buying Price (Base)</label>
+                        <input type="number" name="buying_price" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Selling Price (Base)</label>
+                        <input type="number" name="selling_price" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>Category</label>
+                    <input type="text" name="category" placeholder="e.g. Lubricants">
+                </div>
+                <button type="submit" class="btn-submit" style="width: 100%;">Save Product</button>
+            </form>
+        </div>
+
+        <!-- Import Modal -->
+        <div id="import-modal" class="card" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000; box-shadow: 0 0 20px rgba(0,0,0,0.5); width: 450px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Bulk Import via Excel</h2>
+                <button onclick="document.getElementById('import-modal').style.display='none'" style="background: none; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+                Upload an .xlsx file with columns: <strong>Name, Barcode, Buying Price, Selling Price, Category, Initial Stock</strong>.
+            </p>
+            <form action="{% url 'import_products' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <input type="file" name="excel_file" accept=".xlsx" required style="background: var(--card-surface); color: var(--text-main); border: 1px dashed var(--accent-primary);">
+                </div>
+                <button type="submit" class="btn-submit" style="width: 100%;">Upload & Process</button>
+            </form>
+        </div>
+
         <div class="card">
             <h2>Inventory Dashboard Filters</h2>
             <form method="GET" action="{% url 'inventory_dashboard' %}">

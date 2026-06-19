@@ -1,5 +1,6 @@
 import json
 import uuid
+import openpyxl
 from datetime import timedelta
 from django.utils import timezone
 from django.db.models import Q
@@ -14,7 +15,7 @@ from .decorators import role_required
 from decimal import Decimal
 from django.db.models import Sum, F
 from .models import Product, ProductUnit, Branch, BranchStock, Supplier, StockTransaction, Sale, SaleItem, Tenant, UserProfile, Expense
-from .forms import TenantSignupForm, ExpenseForm
+from .forms import TenantSignupForm, ExpenseForm, ProductForm
 
 def landing_page(request):
     if request.user.is_authenticated:
@@ -188,6 +189,7 @@ def inventory_dashboard(request):
     net_profit = total_revenue - cogs - total_expenses
 
     expense_form = ExpenseForm(user=user)
+    product_form = ProductForm()
 
     return render(request, 'core/inventory.html', {
         'products': products_page,
@@ -197,6 +199,7 @@ def inventory_dashboard(request):
         'all_products': all_products_qs,
         'expenses': expenses.order_by('-date')[:10],
         'expense_form': expense_form,
+        'product_form': product_form,
         'stats': {
             'revenue': total_revenue,
             'expenses': total_expenses,
@@ -204,6 +207,129 @@ def inventory_dashboard(request):
             'net_profit': net_profit
         }
     })
+
+@login_required
+@role_required(['TENANT_ADMIN', 'BRANCH_MANAGER'])
+def add_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            user = request.user
+            try:
+                with transaction.atomic():
+                    # 1. Create Product
+                    product = Product.objects.create(
+                        tenant=user.tenant,
+                        name=form.cleaned_data['name'],
+                        barcode=form.cleaned_data['barcode'],
+                        category=form.cleaned_data['category']
+                    )
+
+                    # 2. Create Default 'Base' Unit
+                    ProductUnit.objects.create(
+                        product=product,
+                        unit_name='Base',
+                        conversion_factor=1.0,
+                        buying_price=form.cleaned_data['buying_price'],
+                        retail_price=form.cleaned_data['selling_price'],
+                        wholesale_price=form.cleaned_data['selling_price']
+                    )
+
+                    messages.success(request, f"Product '{product.name}' added successfully.")
+            except Exception as e:
+                messages.error(request, f"Error adding product: {str(e)}")
+        else:
+            messages.error(request, "Invalid product data.")
+
+    return redirect('inventory_dashboard')
+
+@login_required
+@role_required(['TENANT_ADMIN', 'BRANCH_MANAGER'])
+def import_products(request):
+    if request.method == 'POST' and request.FILES.get('excel_file'):
+        excel_file = request.FILES['excel_file']
+        user = request.user
+
+        try:
+            wb = openpyxl.load_workbook(excel_file)
+            sheet = wb.active
+
+            products_to_create = []
+            # We'll use a dict to keep track of units and stock to create after products are saved
+            unit_and_stock_data = []
+
+            # Assuming header: Name, Barcode, Buying Price, Selling Price, Category, Initial Stock
+            # Rows start from 2
+            for row in sheet.iter_rows(min_row=2, values_only=True):
+                if not row[0]: continue # Skip empty rows
+
+                name = str(row[0])
+                barcode = str(row[1]) if row[1] else uuid.uuid4().hex[:10]
+                buying_price = Decimal(str(row[2])) if row[2] else Decimal('0')
+                selling_price = Decimal(str(row[3])) if row[3] else Decimal('0')
+                category = str(row[4]) if row[4] else ""
+                initial_stock = Decimal(str(row[5])) if len(row) > 5 and row[5] else Decimal('0')
+
+                # Check for duplicate barcode in this tenant
+                if Product.objects.filter(tenant=user.tenant, barcode=barcode).exists():
+                    continue
+
+                product = Product(
+                    tenant=user.tenant,
+                    name=name,
+                    barcode=barcode,
+                    category=category
+                )
+                products_to_create.append(product)
+                unit_and_stock_data.append({
+                    'barcode': barcode,
+                    'buying_price': buying_price,
+                    'selling_price': selling_price,
+                    'initial_stock': initial_stock
+                })
+
+            with transaction.atomic():
+                # Bulk create products
+                Product.objects.bulk_create(products_to_create)
+
+                # Re-fetch created products to get IDs (bulk_create doesn't always return IDs on all DBs, though it does on Postgres)
+                # To be safe and compatible with SQLite (likely used in dev), we'll fetch them.
+                barcodes = [d['barcode'] for d in unit_and_stock_data]
+                created_products = Product.objects.filter(tenant=user.tenant, barcode__in=barcodes)
+                product_map = {p.barcode: p for p in created_products}
+
+                units_to_create = []
+                stocks_to_create = []
+
+                for data in unit_and_stock_data:
+                    prod = product_map.get(data['barcode'])
+                    if not prod: continue
+
+                    units_to_create.append(ProductUnit(
+                        product=prod,
+                        unit_name='Base',
+                        conversion_factor=1.0,
+                        buying_price=data['buying_price'],
+                        retail_price=data['selling_price'],
+                        wholesale_price=data['selling_price']
+                    ))
+
+                    if data['initial_stock'] > 0 and user.branch:
+                        stocks_to_create.append(BranchStock(
+                            branch=user.branch,
+                            product=prod,
+                            quantity=data['initial_stock']
+                        ))
+
+                ProductUnit.objects.bulk_create(units_to_create)
+                BranchStock.objects.bulk_create(stocks_to_create)
+
+                messages.success(request, f"Successfully imported {len(products_to_create)} products.")
+
+        except Exception as e:
+            messages.error(request, f"Error importing products: {str(e)}")
+
+    return redirect('inventory_dashboard')
 
 @login_required
 @role_required(['TENANT_ADMIN', 'BRANCH_MANAGER'])

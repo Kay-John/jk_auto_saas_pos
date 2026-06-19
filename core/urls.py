@@ -9,6 +9,8 @@ urlpatterns = [
     path('pos/', views.pos_screen, name='pos_screen'),
     path('process-sale/', views.process_sale, name='process_sale'),
     path('inventory/', views.inventory_dashboard, name='inventory_dashboard'),
+    path('inventory/add-product/', views.add_product, name='add_product'),
+    path('inventory/import-products/', views.import_products, name='import_products'),
     path('inventory/stock-in/', views.stock_intake, name='stock_intake'),
     path('inventory/log-expense/', views.log_expense, name='log_expense'),
 ]
