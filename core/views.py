@@ -97,7 +97,7 @@ def logout_view(request):
 
 def redirect_user_by_role(user):
     if user.role == 'CASHIER':
-        return redirect('register_screen')
+        return redirect('pos_screen')
     else:
         return redirect('inventory_dashboard')
 
