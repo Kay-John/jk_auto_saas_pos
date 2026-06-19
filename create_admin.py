@@ -20,4 +20,8 @@ if not UserProfile.objects.filter(username=username).exists():
     )
     print("Superuser created successfully.")
 else:
-    print(f"Superuser '{username}' already exists.")
+    print(f"Superuser '{username}' already exists. Updating password...")
+    user = UserProfile.objects.get(username=username)
+    user.set_password(password)
+    user.save()
+    print("Superuser password updated successfully.")
