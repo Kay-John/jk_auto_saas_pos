@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.db import transaction
 from django.contrib import messages
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .decorators import role_required
@@ -137,7 +137,10 @@ def inventory_dashboard(request):
     # Pagination for Product Catalog
     paginator = Paginator(all_products_qs, 10) # 10 products per page
     page_number = request.GET.get('page')
-    products_page = paginator.get_page(page_number)
+    try:
+        products_page = paginator.page(page_number)
+    except (PageNotAnInteger, EmptyPage):
+        products_page = paginator.page(1)
 
     # Efficiently fetch all stock data in one query, limited by sandbox
     if user.role == 'TENANT_ADMIN':
