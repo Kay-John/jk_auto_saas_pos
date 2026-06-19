@@ -119,11 +119,11 @@ def inventory_dashboard(request):
     # Sandboxing based on roles
     if user.role == 'TENANT_ADMIN':
         branches = Branch.objects.filter(tenant=user.tenant)
-        all_products_qs = Product.objects.filter(tenant=user.tenant).prefetch_related('units', 'branch_stocks')
+        all_products_qs = Product.objects.filter(tenant=user.tenant).prefetch_related('units', 'branch_stocks').order_by('id')
         suppliers = Supplier.objects.filter(tenant=user.tenant)
     else: # BRANCH_MANAGER
         branches = Branch.objects.filter(id=user.branch_id)
-        all_products_qs = Product.objects.filter(tenant=user.tenant).prefetch_related('units', 'branch_stocks')
+        all_products_qs = Product.objects.filter(tenant=user.tenant).prefetch_related('units', 'branch_stocks').order_by('id')
         suppliers = Supplier.objects.filter(tenant=user.tenant)
 
     # Apply Global Search Filters
