@@ -13,7 +13,7 @@ email = "admin@jk-autopos.com"
 # Ensure a default tenant exists for the admin superuser
 tenant, created = Tenant.objects.get_or_create(
     name="JK-AutoPOS Admin",
-    defaults={'currency': 'USD', 'subscription_status': 'active'}
+        defaults={'currency': 'UGX', 'subscription_status': 'active'}
 )
 
 if not UserProfile.objects.filter(username=username).exists():

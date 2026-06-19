@@ -75,8 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const retailPill = card.querySelector('.pill-retail');
         const wholesalePill = card.querySelector('.pill-wholesale');
 
-        retailVal.innerText = card.dataset.selectedRetail;
-        wholesaleVal.innerText = card.dataset.selectedWholesale;
+        retailVal.innerText = Math.round(parseFloat(card.dataset.selectedRetail));
+        wholesaleVal.innerText = Math.round(parseFloat(card.dataset.selectedWholesale));
 
         if (mode === 'retail') {
             retailPill.style.opacity = '1';
@@ -189,21 +189,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div style="flex: 1; display: flex; align-items: center; gap: 5px;">
                     <input type="number" value="${item.quantity}" min="1" style="width: 45px;" data-index="${index}" class="qty-input">
-                    <span>@ ${item.price.toFixed(2)}</span>
+                    <span>@ ${Math.round(item.price)}</span>
                 </div>
-                <div style="flex: 0.5; text-align: right;">${itemTotal.toFixed(2)}</div>
+                <div style="flex: 0.5; text-align: right;">${Math.round(itemTotal)}</div>
             `;
             cartItemsContainer.appendChild(cartItemEl);
         });
 
-        subtotalEl.innerText = subtotal.toFixed(2);
+        subtotalEl.innerText = Math.round(subtotal);
         updateGrandTotal();
     }
 
     function updateGrandTotal() {
         const subtotal = parseFloat(subtotalEl.innerText);
         const discount = parseFloat(discountInput.value) || 0;
-        grandTotalEl.innerText = (subtotal - discount).toFixed(2);
+        grandTotalEl.innerText = Math.round(subtotal - discount);
     }
 
     cartItemsContainer.addEventListener('input', (e) => {

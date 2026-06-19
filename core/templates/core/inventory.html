@@ -35,15 +35,15 @@
         <div class="form-grid" style="margin-bottom: 30px;">
             <div class="card" style="text-align: center;">
                 <h4 style="color: var(--contrast-light); opacity: 0.8;">Total Revenue</h4>
-                <h2 style="color: #494A20;">{{ stats.revenue }} {{ user.tenant.currency }}</h2>
+                <h2 style="color: #494A20;">{{ stats.revenue|floatformat:0 }} {{ user.tenant.currency }}</h2>
             </div>
             <div class="card" style="text-align: center;">
                 <h4 style="color: var(--contrast-light); opacity: 0.8;">Total Expenses</h4>
-                <h2 style="color: var(--modifier-secondary);">{{ stats.expenses }} {{ user.tenant.currency }}</h2>
+                <h2 style="color: var(--modifier-secondary);">{{ stats.expenses|floatformat:0 }} {{ user.tenant.currency }}</h2>
             </div>
             <div class="card" style="text-align: center;">
                 <h4 style="color: var(--contrast-light); opacity: 0.8;">Est. Net Profit</h4>
-                <h2 style="color: var(--accent-primary);">{{ stats.net_profit }} {{ user.tenant.currency }}</h2>
+                <h2 style="color: var(--accent-primary);">{{ stats.net_profit|floatformat:0 }} {{ user.tenant.currency }}</h2>
             </div>
         </div>
 
@@ -85,11 +85,11 @@
                 <div class="form-grid" style="margin-bottom: 15px;">
                     <div class="form-group">
                         <label>Buying Price (Base)</label>
-                        <input type="number" name="buying_price" step="0.01" required>
+                        <input type="number" name="buying_price" step="1" required>
                     </div>
                     <div class="form-group">
                         <label>Selling Price (Base)</label>
-                        <input type="number" name="selling_price" step="0.01" required>
+                        <input type="number" name="selling_price" step="1" required>
                     </div>
                 </div>
                 <div class="form-group" style="margin-bottom: 20px;">
@@ -168,7 +168,7 @@
                     </div>
                     <div class="form-group">
                         <label>Quantity</label>
-                        <input type="number" name="quantity" step="0.01" required>
+                        <input type="number" name="quantity" step="1" required>
                     </div>
                     <div class="form-group">
                         <label>Branch</label>
@@ -228,8 +228,8 @@
                         <td>
                             {% for unit in product.units.all %}
                             <div style="font-size: 0.85rem; margin-bottom: 5px;">
-                                <strong>{{ unit.unit_name }}</strong> (x{{ unit.conversion_factor }}):
-                                Retail: {{ unit.retail_price }} | Wholesale: {{ unit.wholesale_price }}
+                                <strong>{{ unit.unit_name }}</strong> (x{{ unit.conversion_factor|floatformat:0 }}):
+                                Retail: {{ unit.retail_price|floatformat:0 }} | Wholesale: {{ unit.wholesale_price|floatformat:0 }}
                             </div>
                             {% endfor %}
                         </td>
@@ -255,7 +255,7 @@
                     </div>
                     <div class="form-group">
                         {{ expense_form.amount.label_tag }}
-                        {{ expense_form.amount }}
+                        <input type="number" name="amount" step="1" required id="id_amount">
                     </div>
                     <div class="form-group">
                         {{ expense_form.date.label_tag }}
@@ -285,7 +285,7 @@
                         <td>{{ expense.date }}</td>
                         <td>{{ expense.branch.name }}</td>
                         <td>{{ expense.get_category_display }}</td>
-                        <td>{{ expense.amount }} {{ user.tenant.currency }}</td>
+                        <td>{{ expense.amount|floatformat:0 }} {{ user.tenant.currency }}</td>
                     </tr>
                     {% empty %}
                     <tr><td colspan="4">No expenses recorded yet.</td></tr>
