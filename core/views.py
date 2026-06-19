@@ -18,10 +18,13 @@ from .forms import TenantSignupForm, ExpenseForm
 
 def landing_page(request):
     if request.user.is_authenticated:
-        return redirect_user_by_role(request.user)
+        return redirect('inventory_dashboard')
     return render(request, 'core/landing.html')
 
-def signup_view(request):
+def register_screen(request):
+    """
+    Onboarding / Registration view for new Tenants.
+    """
     if request.user.is_authenticated:
         return redirect_user_by_role(request.user)
 
@@ -45,14 +48,13 @@ def signup_view(request):
                     )
 
                     # 3. Create Admin User
-                    # Splitting full name into first/last for AbstractUser compatibility
                     full_name = form.cleaned_data['admin_full_name']
                     name_parts = full_name.split(' ', 1)
                     first_name = name_parts[0]
                     last_name = name_parts[1] if len(name_parts) > 1 else ""
 
                     user = UserProfile.objects.create_user(
-                        username=form.cleaned_data['email'], # Using email as username
+                        username=form.cleaned_data['email'],
                         email=form.cleaned_data['email'],
                         password=form.cleaned_data['password'],
                         first_name=first_name,
@@ -63,7 +65,7 @@ def signup_view(request):
                     )
 
                     login(request, user)
-                    messages.success(request, "Welcome to JK-AutoPOS! Your 14-day free trial has begun. Let's start by adding your first product or supplier.")
+                    messages.success(request, "Welcome to JK-AutoPOS! Your 14-day free trial has begun.")
                     return redirect('inventory_dashboard')
             except Exception as e:
                 form.add_error(None, f"An error occurred during provisioning: {str(e)}")
@@ -100,7 +102,7 @@ def redirect_user_by_role(user):
 
 @login_required
 @role_required(['TENANT_ADMIN', 'BRANCH_MANAGER', 'CASHIER'])
-def register_screen(request):
+def pos_screen(request):
     user = request.user
     # Sandboxing: Only products belonging to the user's tenant
     products = Product.objects.filter(tenant=user.tenant).prefetch_related('units')
@@ -112,7 +114,7 @@ def register_screen(request):
         for s in stocks:
             branch_stock_map[s.product_id] = s.quantity
 
-    return render(request, 'core/register.html', {
+    return render(request, 'core/pos.html', {
         'products': products,
         'branch_stock_map': branch_stock_map
     })
