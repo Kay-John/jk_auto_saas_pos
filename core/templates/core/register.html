@@ -1,0 +1,181 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashier Register | JK-AutoPOS</title>
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <style>
+        @media print {
+            body * { visibility: hidden !important; background: white !important; color: black !important; }
+            #receipt-modal, #receipt-modal * { visibility: visible !important; }
+            #receipt-modal { position: absolute; left: 0; top: 0; width: 100%; background: white !important; display: flex !important; }
+            .no-print { display: none !important; }
+            #thermal-receipt { width: 100%; border: none; padding: 0; }
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .badge-online { background-color: #494A20; color: #FAF7F2; } /* 🟢 Cloud Active */
+        .badge-offline { background-color: #BF6D00; color: #FAF7F2; } /* 🟡 Offline Storage Mode */
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">JK-AutoPOS</div>
+        <div class="header-actions" style="display: flex; align-items: center; gap: 15px;">
+            <div id="sync-status" style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <span id="sync-badge" class="badge">Checking...</span>
+                <input type="checkbox" id="offline-toggle" style="width: auto;">
+            </div>
+            <button id="theme-toggle">Toggle Dark/Light Mode</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        {% csrf_token %}
+
+        <!-- Receipt Modal -->
+        <div id="receipt-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center;">
+            <div id="thermal-receipt" style="background: white; color: black; padding: 20px; width: 300px; font-family: 'Courier New', Courier, monospace; font-size: 14px;">
+                <div style="text-align: center; border-bottom: 1px dashed black; padding-bottom: 10px;">
+                    <h3 id="rcpt-biz-name" style="margin: 0;">Business Name</h3>
+                    <div id="rcpt-branch">Branch</div>
+                </div>
+                <div style="padding: 10px 0; font-size: 12px;">
+                    <div>Date: <span id="rcpt-date"></span></div>
+                    <div>Cashier: <span id="rcpt-cashier"></span></div>
+                </div>
+                <table style="width: 100%; border-bottom: 1px dashed black; padding-bottom: 10px;">
+                    <thead>
+                        <tr style="text-align: left; font-size: 12px;">
+                            <th>Item</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rcpt-items">
+                    </tbody>
+                </table>
+                <div style="padding-top: 10px; font-weight: bold; text-align: right;">
+                    TOTAL: <span id="rcpt-total"></span> <span id="rcpt-currency"></span>
+                </div>
+                <div style="text-align: center; margin-top: 20px; border-top: 1px dashed black; padding-top: 10px;">
+                    THANK YOU FOR SHOPPING!
+                </div>
+                <div class="no-print" style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button onclick="window.print()" style="flex: 1; padding: 10px; background: #494A20; color: white; border: none; cursor: pointer;">🖨️ Print Receipt</button>
+                    <button onclick="document.getElementById('receipt-modal').style.display='none'" style="flex: 1; padding: 10px; background: #842400; color: white; border: none; cursor: pointer;">Close</button>
+                </div>
+            </div>
+        </div>
+        <div class="left-panel">
+            <input type="text" class="search-box" id="product-search" placeholder="Search products (Barcode or Name)...">
+            <div class="product-grid" id="product-grid">
+                {% for product in products %}
+                <div class="product-card"
+                     data-name="{{ product.name }}"
+                     data-barcode="{{ product.barcode }}"
+                     data-id="{{ product.id }}">
+                    <div class="product-info">
+                        <strong>{{ product.name }}</strong>
+                        {% with stock=branch_stock_map|dict_get:product.id %}
+                        {% if stock < product.low_stock_threshold %}
+                        <div class="stock-warning" style="color: var(--modifier-secondary); font-size: 0.8rem;">
+                            Low Stock (Current: {{ stock|default:0 }})
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="unit-selector-pills">
+                        {% for unit in product.units.all %}
+                        <div class="unit-pill"
+                             data-unit-id="{{ unit.id }}"
+                             data-unit-name="{{ unit.unit_name }}"
+                             data-retail-price="{{ unit.retail_price }}"
+                             data-wholesale-price="{{ unit.wholesale_price }}">
+                            {{ unit.unit_name }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="price-display">
+                        <span class="pill pill-retail">Retail: <span class="retail-val">-</span></span>
+                        <span class="pill pill-wholesale">Wholesale: <span class="wholesale-val">-</span></span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <h2>Active Cart</h2>
+            <div class="cart-items" id="cart-items">
+                <!-- Cart items will be injected here by JS -->
+            </div>
+
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal">0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Discount</span>
+                    <input type="number" id="discount" value="0" step="0.01">
+                </div>
+                <div class="summary-row">
+                    <span>Total</span>
+                    <span id="grand-total">0.00</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Payment Mode:</label>
+                    <select id="payment-mode">
+                        <option value="CASH">Cash</option>
+                        <option value="MOBILE_MONEY">Mobile Money</option>
+                        <option value="CARD">Card</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Status:</label>
+                    <select id="transaction-status">
+                        <option value="PAID">Paid</option>
+                        <option value="CREDIT">Credit</option>
+                    </select>
+                </div>
+
+                <div class="footer-actions">
+                    <button class="btn-primary" id="save-print">Save & Print Receipt</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inline raw data for JS to handle units switching easily
+        const productsData = {
+            {% for product in products %}
+            "{{ product.id }}": {
+                "name": "{{ product.name }}",
+                "units": [
+                    {% for unit in product.units.all %}
+                    {
+                        "id": "{{ unit.id }}",
+                        "name": "{{ unit.unit_name }}",
+                        "retail": {{ unit.retail_price }},
+                        "wholesale": {{ unit.wholesale_price }}
+                    },
+                    {% endfor %}
+                ]
+            },
+            {% endfor %}
+        };
+    </script>
+    <script src="{% static 'core/js/register.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Started | JK-AutoPOS</title>
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <style>
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .signup-container {
+            background-color: var(--card-surface);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            width: 100%;
+            max-width: 500px;
+        }
+        .signup-container h1 {
+            color: var(--accent-primary);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .signup-container p.subtitle {
+            text-align: center;
+            color: rgba(250, 247, 242, 0.7);
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: none;
+            background-color: var(--input-bg);
+            color: #2C1A11;
+            font-size: 1rem;
+        }
+        .btn-signup {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+        .btn-signup:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+        .error-list {
+            background-color: rgba(132, 36, 0, 0.1);
+            border: 1px solid var(--modifier-secondary);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            list-style: none;
+            color: var(--modifier-secondary);
+            font-size: 0.9rem;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        .login-link a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <h1>Join JK-AutoPOS</h1>
+        <p class="subtitle">Start your 14-day free trial today. No credit card required.</p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {% if form.errors %}
+            <ul class="error-list">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <div class="form-group">
+                <label>{{ form.business_name.label }}</label>
+                {{ form.business_name }}
+            </div>
+
+            <div class="form-group">
+                <label>{{ form.admin_full_name.label }}</label>
+                {{ form.admin_full_name }}
+            </div>
+
+            <div class="form-group">
+                <label>{{ form.email.label }}</label>
+                {{ form.email }}
+            </div>
+
+            <div class="form-group">
+                <label>{{ form.password.label }}</label>
+                {{ form.password }}
+            </div>
+
+            <div class="form-group">
+                <label>{{ form.currency.label }}</label>
+                {{ form.currency }}
+            </div>
+
+            <button type="submit" class="btn-signup">Create My Account</button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="{% url 'login' %}">Login here</a>
+        </div>
+    </div>
+</body>
+</html>

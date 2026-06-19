@@ -1,0 +1,393 @@
+Watching for file changes with StatReloader
+[18/Jun/2026 21:53:57] "GET /login/ HTTP/1.1" 200 2658
+[18/Jun/2026 21:53:57] "GET /static/core/css/style.css HTTP/1.1" 200 3503
+[18/Jun/2026 21:53:59] "POST /login/ HTTP/1.1" 302 0
+Internal Server Error: /
+Traceback (most recent call last):
+  File "/app/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/core/decorators.py", line 18, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/core/views.py", line 108, in register_screen
+    return render(request, 'core/register.html', {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/template/loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/template/backends/django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/template/engine.py", line 186, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/template/base.py", line 157, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/template/base.py", line 199, in compile_nodelist
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/template/base.py", line 585, in parse
+    raise self.error(token, e)
+  File "/app/venv/lib/python3.12/site-packages/django/template/base.py", line 583, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 894, in do_for
+    nodelist_loop = parser.parse(
+                    ^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/template/base.py", line 585, in parse
+    raise self.error(token, e)
+  File "/app/venv/lib/python3.12/site-packages/django/template/base.py", line 583, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 1676, in do_with
+    extra_context = token_kwargs(remaining_bits, parser, support_legacy=True)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/template/base.py", line 1202, in token_kwargs
+    kwargs[key] = parser.compile_filter(value)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/template/base.py", line 676, in compile_filter
+    return FilterExpression(token, self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/template/base.py", line 771, in __init__
+    filter_func = parser.find_filter(filter_name)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/template/base.py", line 682, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Template: /app/core/templates/core/register.html, Invalid filter: 'dict_get'
+[18/Jun/2026 21:53:59] "GET / HTTP/1.1" 500 224100
+[18/Jun/2026 21:55:31] "GET /login/ HTTP/1.1" 200 2658
+[18/Jun/2026 21:55:31] "GET /static/core/css/style.css HTTP/1.1" 200 3503
+[18/Jun/2026 21:55:32] "POST /login/ HTTP/1.1" 302 0
+[18/Jun/2026 21:55:33] "GET / HTTP/1.1" 200 3491
+[18/Jun/2026 21:55:33] "GET /static/core/js/register.js HTTP/1.1" 200 12846
+[18/Jun/2026 21:57:20] "GET /login/ HTTP/1.1" 200 2658
+[18/Jun/2026 21:57:20] "GET /static/core/css/style.css HTTP/1.1" 200 3503
+[18/Jun/2026 21:57:21] "POST /login/ HTTP/1.1" 302 0
+[18/Jun/2026 21:57:21] "GET / HTTP/1.1" 200 5266
+[18/Jun/2026 21:57:21] "GET /static/core/js/register.js HTTP/1.1" 200 12846
+Bad Request: /process-sale/
+[18/Jun/2026 21:57:22] "POST /process-sale/ HTTP/1.1" 400 99
+/app/core/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 18, 2026 - 21:53:53
+Django version 6.0.6, using settings 'pos_system.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Watching for file changes with StatReloader
+/app/core/models.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 18, 2026 - 22:37:01
+Django version 6.0.6, using settings 'pos_system.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Watching for file changes with StatReloader
+Exception in thread django-main-thread:
+Traceback (most recent call last):
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+    self.run()
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/threading.py", line 1012, in run
+    self._target(*self._args, **self._kwargs)
+  File "/app/venv/lib/python3.12/site-packages/django/utils/autoreload.py", line 64, in wrapper
+    fn(*args, **kwargs)
+  File "/app/venv/lib/python3.12/site-packages/django/core/management/commands/runserver.py", line 124, in inner_run
+    autoreload.raise_last_exception()
+  File "/app/venv/lib/python3.12/site-packages/django/utils/autoreload.py", line 86, in raise_last_exception
+    raise _exception[1]
+  File "/app/venv/lib/python3.12/site-packages/django/core/management/__init__.py", line 395, in execute
+    autoreload.check_errors(django.setup)()
+  File "/app/venv/lib/python3.12/site-packages/django/utils/autoreload.py", line 64, in wrapper
+    fn(*args, **kwargs)
+  File "/app/venv/lib/python3.12/site-packages/django/__init__.py", line 24, in setup
+    apps.populate(settings.INSTALLED_APPS)
+  File "/app/venv/lib/python3.12/site-packages/django/apps/registry.py", line 116, in populate
+    app_config.import_models()
+  File "/app/venv/lib/python3.12/site-packages/django/apps/config.py", line 269, in import_models
+    self.models_module = import_module(models_module_name)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/app/core/models.py", line 113, in <module>
+    class Expense(models.Model):
+  File "/app/core/models.py", line 127, in Expense
+    date = models.DateField(default=timezone.now)
+                                    ^^^^^^^^
+NameError: name 'timezone' is not defined
+/app/core/models.py changed, reloading.
+Watching for file changes with StatReloader
+/app/core/models.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 18, 2026 - 22:39:27
+Django version 6.0.6, using settings 'pos_system.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Watching for file changes with StatReloader
+/app/core/forms.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 18, 2026 - 22:40:20
+Django version 6.0.6, using settings 'pos_system.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Watching for file changes with StatReloader
+Exception in thread django-main-thread:
+Traceback (most recent call last):
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+    self.run()
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/threading.py", line 1012, in run
+    self._target(*self._args, **self._kwargs)
+  File "/app/venv/lib/python3.12/site-packages/django/utils/autoreload.py", line 64, in wrapper
+    fn(*args, **kwargs)
+  File "/app/venv/lib/python3.12/site-packages/django/core/management/commands/runserver.py", line 134, in inner_run
+    self.check(**check_kwargs)
+  File "/app/venv/lib/python3.12/site-packages/django/core/management/base.py", line 496, in check
+    all_issues = checks.run_checks(
+                 ^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/core/checks/registry.py", line 89, in run_checks
+    new_errors = check(app_configs=app_configs, databases=databases)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/core/checks/urls.py", line 44, in check_url_namespaces_unique
+    all_namespaces = _load_all_namespaces(resolver)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/core/checks/urls.py", line 63, in _load_all_namespaces
+    url_patterns = getattr(resolver, "url_patterns", [])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/utils/functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/urls/resolvers.py", line 729, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+                       ^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/utils/functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/urls/resolvers.py", line 722, in urlconf_module
+    return import_module(self.urlconf_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/app/pos_system/urls.py", line 23, in <module>
+    path("", include('core.urls')),
+             ^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/urls/conf.py", line 39, in include
+    urlconf_module = import_module(urlconf_module)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/app/core/urls.py", line 2, in <module>
+    from . import views
+  File "/app/core/views.py", line 15, in <module>
+    from .forms import TenantSignupForm
+ImportError: cannot import name 'TenantSignupForm' from 'core.forms' (/app/core/forms.py)
+/app/core/forms.py changed, reloading.
+Performing system checks...
+
+Watching for file changes with StatReloader
+/app/core/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 18, 2026 - 22:41:38
+Django version 6.0.6, using settings 'pos_system.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Watching for file changes with StatReloader
+/app/core/urls.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 18, 2026 - 22:41:46
+Django version 6.0.6, using settings 'pos_system.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Watching for file changes with StatReloader
+/app/core/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 18, 2026 - 22:42:03
+Django version 6.0.6, using settings 'pos_system.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Watching for file changes with StatReloader
+[18/Jun/2026 22:43:35] "GET /login/ HTTP/1.1" 200 2658
+[18/Jun/2026 22:43:35] "GET /static/core/css/style.css HTTP/1.1" 200 3503
+[18/Jun/2026 22:43:36] "POST /login/ HTTP/1.1" 302 0
+[18/Jun/2026 22:43:36] "GET / HTTP/1.1" 200 8069
+[18/Jun/2026 22:43:36] "GET /static/core/js/register.js HTTP/1.1" 200 13870
+[18/Jun/2026 22:43:37] "POST /process-sale/ HTTP/1.1" 200 348
+[18/Jun/2026 22:43:37] "GET /logout/ HTTP/1.1" 302 0
+[18/Jun/2026 22:43:37] "GET /login/ HTTP/1.1" 200 2658
+[18/Jun/2026 22:43:37] "GET /login/ HTTP/1.1" 200 2658
+[18/Jun/2026 22:43:38] "POST /login/ HTTP/1.1" 302 0
+/app/core/views.py:138: UnorderedObjectListWarning: Pagination may yield inconsistent results with an unordered object_list: <class 'core.models.Product'> QuerySet.
+  paginator = Paginator(all_products_qs, 10) # 10 products per page
+[18/Jun/2026 22:43:38] "GET /inventory/ HTTP/1.1" 200 11953
+/app/pos_system/settings.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 18, 2026 - 22:42:36
+Django version 6.0.6, using settings 'pos_system.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Traceback (most recent call last):
+  File "/app/venv/lib/python3.12/site-packages/django/core/management/base.py", line 420, in run_from_argv
+    self.execute(*args, **cmd_options)
+  File "/app/venv/lib/python3.12/site-packages/django/core/management/commands/runserver.py", line 69, in execute
+    super().execute(*args, **options)
+  File "/app/venv/lib/python3.12/site-packages/django/core/management/base.py", line 464, in execute
+    output = self.handle(*args, **options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/core/management/commands/runserver.py", line 80, in handle
+    if not settings.DEBUG and not settings.ALLOWED_HOSTS:
+           ^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/conf/__init__.py", line 75, in __getattr__
+    self._setup(name)
+  File "/app/venv/lib/python3.12/site-packages/django/conf/__init__.py", line 62, in _setup
+    self._wrapped = Settings(settings_module)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/conf/__init__.py", line 162, in __init__
+    mod = importlib.import_module(self.SETTINGS_MODULE)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/app/pos_system/settings.py", line 15, in <module>
+    import dj_database_url
+ModuleNotFoundError: No module named 'dj_database_url'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/manage.py", line 23, in <module>
+    main()
+  File "/app/manage.py", line 19, in main
+    execute_from_command_line(sys.argv)
+  File "/app/venv/lib/python3.12/site-packages/django/core/management/__init__.py", line 443, in execute_from_command_line
+    utility.execute()
+  File "/app/venv/lib/python3.12/site-packages/django/core/management/__init__.py", line 437, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "/app/venv/lib/python3.12/site-packages/django/core/management/base.py", line 433, in run_from_argv
+    connections.close_all()
+  File "/app/venv/lib/python3.12/site-packages/django/utils/connection.py", line 84, in close_all
+    for conn in self.all(initialized_only=True):
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/utils/connection.py", line 78, in all
+    for alias in self
+                 ^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/utils/connection.py", line 73, in __iter__
+    return iter(self.settings)
+                ^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/utils/functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/utils/connection.py", line 45, in settings
+    self._settings = self.configure_settings(self._settings)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/db/utils.py", line 151, in configure_settings
+    databases = super().configure_settings(databases)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/utils/connection.py", line 50, in configure_settings
+    settings = getattr(django_settings, self.settings_name)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/conf/__init__.py", line 75, in __getattr__
+    self._setup(name)
+  File "/app/venv/lib/python3.12/site-packages/django/conf/__init__.py", line 62, in _setup
+    self._wrapped = Settings(settings_module)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/conf/__init__.py", line 162, in __init__
+    mod = importlib.import_module(self.SETTINGS_MODULE)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jules/.pyenv/versions/3.12.13/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/app/pos_system/settings.py", line 15, in <module>
+    import dj_database_url
+ModuleNotFoundError: No module named 'dj_database_url'
