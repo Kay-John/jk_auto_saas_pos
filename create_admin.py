@@ -12,8 +12,20 @@ email = "admin@jk-autopos.com"
 
 # Ensure a default tenant exists for the admin superuser
 tenant, created = Tenant.objects.get_or_create(
-    name="JK-AutoPOS Admin",
-        defaults={'currency': 'UGX', 'subscription_status': 'active'}
+    name="JK-AutoPOS HQ",
+    defaults={'currency': 'UGX', 'subscription_status': 'active'}
+)
+
+# Create a default branch for the admin tenant if it doesn't exist
+branch, _ = Branch.objects.get_or_create(
+    tenant=tenant,
+    name="Main Branch"
+)
+
+# Create a default general supplier if none exist
+Supplier.objects.get_or_create(
+    tenant=tenant,
+    name="General Supplier"
 )
 
 if not UserProfile.objects.filter(username=username).exists():
@@ -23,7 +35,8 @@ if not UserProfile.objects.filter(username=username).exists():
         email=email,
         password=password,
         role='TENANT_ADMIN',
-        tenant=tenant
+        tenant=tenant,
+        branch=branch
     )
     print("Superuser created successfully.")
 else:

@@ -46,8 +46,8 @@ class Product(models.Model):
 class ProductUnit(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='units')
     unit_name = models.CharField(max_length=50)  # e.g., Piece, Box, Carton
-    conversion_factor = models.DecimalField(max_digits=10, decimal_places=2, default=1.0) # conversion to base unit
-    buying_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    conversion_factor = models.DecimalField(max_digits=10, decimal_places=2, default=1) # conversion to base unit
+    buying_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     retail_price = models.DecimalField(max_digits=10, decimal_places=2)
     wholesale_price = models.DecimalField(max_digits=10, decimal_places=2)
 
@@ -65,7 +65,7 @@ class Supplier(models.Model):
 class BranchStock(models.Model):
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='stocks')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='branch_stocks')
-    quantity = models.DecimalField(max_digits=15, decimal_places=2, default=0.0) # Quantity in base units
+    quantity = models.DecimalField(max_digits=15, decimal_places=2, default=0) # Quantity in base units
 
     class Meta:
         unique_together = ('branch', 'product')
@@ -101,9 +101,9 @@ class Sale(models.Model):
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     payment_mode = models.CharField(max_length=20, choices=PAYMENT_MODES)
     status = models.CharField(max_length=10, choices=TRANSACTION_STATUS)
-    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    balance_due = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    balance_due = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
 class SaleItem(models.Model):

@@ -61,7 +61,8 @@
         <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
             <h1 style="margin: 0;">Inventory Management</h1>
             <div style="display: flex; gap: 10px;">
-                <button class="btn-submit" style="margin: 0; background-color: var(--action-trigger);" onclick="document.getElementById('add-product-modal').style.display='block'">+ Add New Product</button>
+                <button class="btn-submit" style="margin: 0; background-color: var(--action-trigger);" onclick="document.getElementById('add-product-modal').style.display='block'">+ Add Product</button>
+                <button class="btn-submit" style="margin: 0; background-color: var(--accent-secondary);" onclick="document.getElementById('add-supplier-modal').style.display='block'">+ Add Supplier</button>
                 <button class="btn-submit" style="margin: 0; background-color: var(--accent-primary);" onclick="document.getElementById('import-modal').style.display='block'">Bulk Import (Excel)</button>
             </div>
         </div>
@@ -97,6 +98,26 @@
                     <input type="text" name="category" placeholder="e.g. Lubricants">
                 </div>
                 <button type="submit" class="btn-submit" style="width: 100%;">Save Product</button>
+            </form>
+        </div>
+
+        <!-- Add Supplier Modal -->
+        <div id="add-supplier-modal" class="card" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000; box-shadow: 0 0 20px rgba(0,0,0,0.5); width: 400px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Add New Supplier</h2>
+                <button onclick="document.getElementById('add-supplier-modal').style.display='none'" style="background: none; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <form action="{% url 'add_supplier' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Supplier Name</label>
+                    <input type="text" name="name" required placeholder="e.g. TotalEnergies">
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>Contact Info (Email/Phone)</label>
+                    <input type="text" name="contact" placeholder="e.g. contact@supplier.com">
+                </div>
+                <button type="submit" class="btn-submit" style="width: 100%;">Save Supplier</button>
             </form>
         </div>
 
@@ -155,7 +176,7 @@
                         <label>Product</label>
                         <select name="product" id="id_product" required>
                             <option value="">Select Product</option>
-                            {% for product in products %}
+                            {% for product in all_products %}
                             <option value="{{ product.id }}">{{ product.name }}</option>
                             {% endfor %}
                         </select>

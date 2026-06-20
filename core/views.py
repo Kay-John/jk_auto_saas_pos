@@ -210,6 +210,23 @@ def inventory_dashboard(request):
 
 @login_required
 @role_required(['TENANT_ADMIN', 'BRANCH_MANAGER'])
+def add_supplier(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        contact = request.POST.get('contact')
+        if name:
+            Supplier.objects.create(
+                tenant=request.user.tenant,
+                name=name,
+                contact_info=contact
+            )
+            messages.success(request, f"Supplier '{name}' added successfully.")
+        else:
+            messages.error(request, "Supplier name is required.")
+    return redirect('inventory_dashboard')
+
+@login_required
+@role_required(['TENANT_ADMIN', 'BRANCH_MANAGER'])
 def add_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST)
