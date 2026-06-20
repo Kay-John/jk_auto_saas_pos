@@ -4,7 +4,7 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pos_system.settings")
 django.setup()
 
-from core.models import UserProfile, Tenant
+from core.models import UserProfile, Tenant, Branch, Supplier
 
 username = "admin"
 password = os.environ.get("DJANGO_SUPERUSER_PASSWORD", "AdminPass123!")
