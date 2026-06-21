@@ -105,6 +105,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Explicitly trap 'Enter' to prevent premature message channel termination
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // If there is exactly one product visible, add it to cart
+            const visibleCards = Array.from(productGrid.querySelectorAll('.product-card')).filter(c => c.style.display !== 'none');
+            if (visibleCards.length === 1) {
+                addToCart(visibleCards[0]);
+                searchInput.value = '';
+                searchInput.dispatchEvent(new Event('input'));
+            }
+        }
+    });
+
     // Handle Clicks on Product Grid
     productGrid.addEventListener('click', (e) => {
         const unitPill = e.target.closest('.unit-pill');
@@ -254,31 +270,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    function processOnline(data) {
+    async function processOnline(data) {
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        fetch('/process-sale/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(res => {
+        try {
+            const response = await fetch('/process-sale/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify(data)
+            });
+
+            const res = await response.json();
             if (res.status === 'success') {
                 showReceipt(res.receipt_data);
                 finalizeSale();
             } else {
+                console.error('Backend error:', res.message);
                 alert('Server Error: ' + res.message + '. Saving offline instead.');
                 saveOffline(data);
             }
-        })
-        .catch(err => {
-            console.error('Network error:', err);
-            alert('Connection Lost. Saving transaction offline.');
+        } catch (err) {
+            console.error('Network error / Timeout:', err);
+            alert('Connection Lost or Slow Network. Saving transaction offline.');
             saveOffline(data);
-        });
+        } finally {
+            searchInput.focus();
+        }
     }
 
     function saveOffline(data) {
@@ -324,6 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cart = [];
         discountInput.value = 0;
         renderCart();
+        searchInput.focus();
     }
 
     async function checkReconciliation() {

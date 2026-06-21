@@ -54,3 +54,9 @@ Watching for file changes with StatReloader
 [20/Jun/2026 07:11:26] "GET /inventory/ HTTP/1.1" 200 18263
 Not Found: /inventory/suppliers/
 [20/Jun/2026 07:11:26] "GET /inventory/suppliers/ HTTP/1.1" 404 5444
+[21/Jun/2026 19:43:23] "GET /login/ HTTP/1.1" 200 2658
+[21/Jun/2026 19:43:24] "GET /static/core/css/style.css HTTP/1.1" 200 3503
+[21/Jun/2026 19:43:25] "POST /login/ HTTP/1.1" 302 0
+[21/Jun/2026 19:43:25] "GET /pos/ HTTP/1.1" 200 7852
+[21/Jun/2026 19:43:25] "GET /static/core/js/register.js HTTP/1.1" 200 14819
+[21/Jun/2026 19:43:25] "GET /pos/ HTTP/1.1" 200 7852
