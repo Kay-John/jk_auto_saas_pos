@@ -432,11 +432,17 @@ def process_sale(request):
             total_amount = Decimal(str(data.get('total', 0)))
 
             # Secure multi-tenant context from user session
-            branch = user.branch
             tenant = user.tenant
+            branch = user.branch
 
-            if not branch or not tenant:
-                 return JsonResponse({'status': 'error', 'message': 'User not assigned to a branch/tenant'}, status=400)
+            if not tenant:
+                 return JsonResponse({'status': 'error', 'message': 'User not assigned to a tenant'}, status=400)
+
+            # Robust Fallback: If no branch in session, use tenant's main branch
+            if not branch:
+                branch = Branch.objects.filter(tenant=tenant).first()
+                if not branch:
+                    return JsonResponse({'status': 'error', 'message': 'Tenant has no branches defined'}, status=400)
 
             sale = Sale.objects.create(
                 id=sale_id if sale_id else uuid.uuid4(),

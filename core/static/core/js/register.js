@@ -284,8 +284,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const res = await response.json();
             if (res.status === 'success') {
-                showReceipt(res.receipt_data);
                 finalizeSale();
+                if (res.receipt_data) {
+                    showReceipt(res.receipt_data);
+                } else {
+                    alert('Sale saved successfully!');
+                }
             } else {
                 console.error('Backend error:', res.message);
                 alert('Server Error: ' + res.message + '. Saving offline instead.');
