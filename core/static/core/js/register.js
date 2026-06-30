@@ -331,11 +331,12 @@ document.addEventListener('DOMContentLoaded', () => {
         itemsBody.innerHTML = '';
         data.items.forEach(item => {
             const tr = document.createElement('tr');
-            tr.style.fontSize = '12px';
+            tr.style.fontSize = '11px';
             tr.innerHTML = `
                 <td>${item.name}</td>
                 <td>${item.qty}</td>
-                <td style="text-align: right;">${item.price}</td>
+                <td>${item.price}</td>
+                <td style="text-align: right;">${item.row_total}</td>
             `;
             itemsBody.appendChild(tr);
         });

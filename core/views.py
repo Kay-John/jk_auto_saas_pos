@@ -495,14 +495,15 @@ def process_sale(request):
                     'branch_name': branch.name,
                     'date': sale.created_at.strftime('%Y-%m-%d %H:%M'),
                     'cashier': f"{user.first_name} {user.last_name}",
-                    'total': str(total_amount),
+                    'total': str(total_amount.quantize(Decimal('1'))),
                     'currency': tenant.currency,
                     'payment_mode': sale.get_payment_mode_display(),
                     'items': [
                         {
                             'name': str(item.product_unit),
-                            'qty': str(item.quantity),
-                            'price': str(item.unit_price)
+                            'qty': str(item.quantity.quantize(Decimal('1'))),
+                            'price': str(item.unit_price.quantize(Decimal('1'))),
+                            'row_total': str((item.quantity * item.unit_price).quantize(Decimal('1')))
                         } for item in sale.items.all()
                     ]
                 }

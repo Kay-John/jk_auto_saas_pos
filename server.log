@@ -72,3 +72,23 @@ Quit the server with CONTROL-C.
 WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
 For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
 Watching for file changes with StatReloader
+/app/core/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 22, 2026 - 06:01:04
+Django version 6.0.6, using settings 'pos_system.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Watching for file changes with StatReloader
+[30/Jun/2026 08:57:53] "GET /login/ HTTP/1.1" 200 2658
+[30/Jun/2026 08:57:53] "GET /static/core/css/style.css HTTP/1.1" 200 3503
+[30/Jun/2026 08:57:54] "POST /login/ HTTP/1.1" 302 0
+[30/Jun/2026 08:57:54] "GET /pos/ HTTP/1.1" 200 7957
+[30/Jun/2026 08:57:54] "GET /static/core/js/register.js HTTP/1.1" 200 15004
+[30/Jun/2026 08:57:55] "GET /pos/ HTTP/1.1" 200 7957
+[30/Jun/2026 08:57:55] "GET /static/core/js/register.js HTTP/1.1" 200 15004
+[30/Jun/2026 08:57:55] "POST /process-sale/ HTTP/1.1" 200 358
