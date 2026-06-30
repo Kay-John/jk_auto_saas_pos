@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
     <style>
         @media print {
+            @page { size: auto; margin: 0mm; }
+            body { margin: 10mm; }
             body * { visibility: hidden !important; background: white !important; color: black !important; }
             #receipt-modal, #receipt-modal * { visibility: visible !important; }
             #receipt-modal { position: absolute; left: 0; top: 0; width: 100%; background: white !important; display: flex !important; }
@@ -44,7 +46,7 @@
         <div id="receipt-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center;">
             <div id="thermal-receipt" style="background: white; color: black; padding: 20px; width: 300px; font-family: 'Courier New', Courier, monospace; font-size: 14px;">
                 <div style="text-align: center; border-bottom: 1px dashed black; padding-bottom: 10px;">
-                    <h3 id="rcpt-biz-name" style="margin: 0;">Business Name</h3>
+                    <h3 id="rcpt-biz-name" style="margin: 0;">{{ user.tenant.name }}</h3>
                     <div id="rcpt-branch">Branch</div>
                 </div>
                 <div style="padding: 10px 0; font-size: 12px;">

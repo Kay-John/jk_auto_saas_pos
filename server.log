@@ -92,3 +92,11 @@ Watching for file changes with StatReloader
 [30/Jun/2026 08:57:55] "GET /pos/ HTTP/1.1" 200 7957
 [30/Jun/2026 08:57:55] "GET /static/core/js/register.js HTTP/1.1" 200 15004
 [30/Jun/2026 08:57:55] "POST /process-sale/ HTTP/1.1" 200 358
+[30/Jun/2026 10:16:21] "GET /login/ HTTP/1.1" 200 2658
+[30/Jun/2026 10:16:21] "GET /static/core/css/style.css HTTP/1.1" 200 3503
+[30/Jun/2026 10:16:23] "POST /login/ HTTP/1.1" 302 0
+[30/Jun/2026 10:16:23] "GET /pos/ HTTP/1.1" 200 8042
+[30/Jun/2026 10:16:23] "GET /static/core/js/register.js HTTP/1.1" 200 15004
+[30/Jun/2026 10:16:23] "GET /pos/ HTTP/1.1" 200 8042
+[30/Jun/2026 10:16:23] "GET /static/core/js/register.js HTTP/1.1" 200 15004
+[30/Jun/2026 10:16:23] "POST /process-sale/ HTTP/1.1" 200 358
