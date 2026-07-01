@@ -537,7 +537,11 @@ def billing_page(request):
     if user.role != 'TENANT_ADMIN':
         return render(request, 'core/403.html', status=403)
 
+    days_left = 0
+    if tenant.trial_end_date:
+        days_left = (tenant.trial_end_date - timezone.now()).days
+
     return render(request, 'core/billing.html', {
         'tenant': tenant,
-        'days_left': (tenant.trial_end_date - timezone.now()).days if tenant.trial_end_date else 0
+        'days_left': days_left
     })

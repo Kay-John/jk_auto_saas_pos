@@ -19,3 +19,15 @@ For more information on production servers see: https://docs.djangoproject.com/e
 Path: /inventory/, Protected: True, Trial Ended: None, Not Active: True
 Path: /pos/, Protected: True, Trial Ended: None, Not Active: True
 Watching for file changes with StatReloader
+/app/core/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+July 01, 2026 - 20:31:22
+Django version 6.0.6, using settings 'pos_system.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Watching for file changes with StatReloader
