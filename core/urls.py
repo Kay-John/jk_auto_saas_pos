@@ -14,4 +14,5 @@ urlpatterns = [
     path('inventory/import-products/', views.import_products, name='import_products'),
     path('inventory/stock-in/', views.stock_intake, name='stock_intake'),
     path('inventory/log-expense/', views.log_expense, name='log_expense'),
+    path('inventory/sales/', views.sales_report, name='sales_report'),
 ]

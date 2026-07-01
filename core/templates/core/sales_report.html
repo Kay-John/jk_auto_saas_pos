@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>Sales Report | JK-AutoPOS</title>
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+</head>
+<body>
+    <header>
+        <div class="logo">JK-AutoPOS - Sales Audit</div>
+        <nav>
+            <a href="{% url 'inventory_dashboard' %}" style="color: white; margin-right: 15px;">Dashboard</a>
+            <a href="{% url 'pos_screen' %}" style="color: white;">POS Register</a>
+        </nav>
+    </header>
+    <div class="main-container">
+        <div class="card">
+            <h2>Recent Sales Transactions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Sale ID</th>
+                        <th>Branch</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th>Total ({{ user.tenant.currency }})</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                    <tr>
+                        <td>{{ sale.created_at|date:"Y-m-d H:i" }}</td>
+                        <td><small>{{ sale.id }}</small></td>
+                        <td>{{ sale.branch.name }}</td>
+                        <td>{{ sale.get_payment_mode_display }}</td>
+                        <td>{{ sale.status }}</td>
+                        <td>{{ sale.total_amount|floatformat:0 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6">No sales recorded yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="pagination" style="margin-top: 20px;">
+                {% if sales.has_previous %}
+                    <a href="?page=1" style="color: var(--accent-primary);">first</a>
+                    <a href="?page={{ sales.previous_page_number }}" style="color: var(--accent-primary);">previous</a>
+                {% endif %}
+                <span>Page {{ sales.number }} of {{ sales.paginator.num_pages }}</span>
+                {% if sales.has_next %}
+                    <a href="?page={{ sales.next_page_number }}" style="color: var(--accent-primary);">next</a>
+                    <a href="?page={{ sales.paginator.num_pages }}" style="color: var(--accent-primary);">last</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -512,3 +512,19 @@ def process_sale(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
     return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=405)
+
+def sales_report(request):
+    user = request.user
+    sales = Sale.objects.filter(tenant=user.tenant).order_by('-created_at')
+    if user.role != 'TENANT_ADMIN':
+        sales = sales.filter(branch=user.branch)
+
+    # Simple pagination
+    paginator = Paginator(sales, 20)
+    page_number = request.GET.get('page')
+    try:
+        sales_page = paginator.page(page_number)
+    except:
+        sales_page = paginator.page(1)
+
+    return render(request, 'core/sales_report.html', {'sales': sales_page})

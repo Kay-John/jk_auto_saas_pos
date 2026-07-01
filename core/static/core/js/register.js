@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const subtotalEl = document.getElementById('subtotal');
     const grandTotalEl = document.getElementById('grand-total');
     const discountInput = document.getElementById('discount');
+    const clearCartBtn = document.getElementById('clear-cart');
 
     let cart = [];
     let db;
@@ -207,7 +208,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <input type="number" value="${item.quantity}" min="1" style="width: 45px;" data-index="${index}" class="qty-input">
                     <span>@ ${Math.round(item.price)}</span>
                 </div>
-                <div style="flex: 0.5; text-align: right;">${Math.round(itemTotal)}</div>
+                <div style="flex: 0.5; text-align: right; display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+                    <span>${Math.round(itemTotal)}</span>
+                    <button class="remove-item" data-index="${index}" style="background: none; border: none; color: var(--modifier-secondary); cursor: pointer; font-size: 1.2rem;">✕</button>
+                </div>
             `;
             cartItemsContainer.appendChild(cartItemEl);
         });
@@ -221,6 +225,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const discount = parseFloat(discountInput.value) || 0;
         grandTotalEl.innerText = Math.round(subtotal - discount);
     }
+
+    cartItemsContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-item')) {
+            const index = parseInt(e.target.dataset.index);
+            cart.splice(index, 1);
+            renderCart();
+        }
+    });
 
     cartItemsContainer.addEventListener('input', (e) => {
         const index = e.target.dataset.index;
@@ -242,6 +254,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     discountInput.addEventListener('input', updateGrandTotal);
+
+    clearCartBtn.addEventListener('click', () => {
+        if (cart.length > 0 && confirm('Are you sure you want to clear the entire cart?')) {
+            finalizeSale();
+        }
+    });
 
     document.getElementById('save-print').addEventListener('click', () => {
         if (cart.length === 0) {

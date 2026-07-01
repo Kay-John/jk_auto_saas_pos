@@ -100,3 +100,131 @@ Watching for file changes with StatReloader
 [30/Jun/2026 10:16:23] "GET /pos/ HTTP/1.1" 200 8042
 [30/Jun/2026 10:16:23] "GET /static/core/js/register.js HTTP/1.1" 200 15004
 [30/Jun/2026 10:16:23] "POST /process-sale/ HTTP/1.1" 200 358
+/app/core/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 30, 2026 - 08:55:38
+Django version 6.0.6, using settings 'pos_system.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Watching for file changes with StatReloader
+/app/core/urls.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+July 01, 2026 - 17:40:51
+Django version 6.0.6, using settings 'pos_system.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Watching for file changes with StatReloader
+[01/Jul/2026 17:48:42] "GET /login/ HTTP/1.1" 200 2658
+[01/Jul/2026 17:48:42] "GET /static/core/css/style.css HTTP/1.1" 200 3503
+[01/Jul/2026 17:48:43] "POST /login/ HTTP/1.1" 302 0
+[01/Jul/2026 17:48:43] "GET /pos/ HTTP/1.1" 200 8340
+[01/Jul/2026 17:48:43] "GET /static/core/js/register.js HTTP/1.1" 200 15833
+[01/Jul/2026 17:48:43] "GET /pos/ HTTP/1.1" 200 8340
+[01/Jul/2026 17:50:04] "GET /login/ HTTP/1.1" 200 2658
+[01/Jul/2026 17:50:04] "GET /static/core/css/style.css HTTP/1.1" 200 3503
+[01/Jul/2026 17:50:05] "POST /login/ HTTP/1.1" 302 0
+[01/Jul/2026 17:50:05] "GET /pos/ HTTP/1.1" 200 8340
+[01/Jul/2026 17:50:05] "GET /static/core/js/register.js HTTP/1.1" 200 15833
+[01/Jul/2026 17:50:05] "GET /pos/ HTTP/1.1" 200 8340
+[01/Jul/2026 17:50:05] "GET /static/core/js/register.js HTTP/1.1" 200 15833
+[01/Jul/2026 17:51:30] "GET /login/ HTTP/1.1" 200 2658
+[01/Jul/2026 17:51:30] "GET /static/core/css/style.css HTTP/1.1" 200 3503
+[01/Jul/2026 17:51:31] "POST /login/ HTTP/1.1" 302 0
+[01/Jul/2026 17:51:31] "GET /inventory/ HTTP/1.1" 200 18255
+Internal Server Error: /inventory/sales/
+Traceback (most recent call last):
+  File "/app/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/core/views.py", line 518, in sales_report
+    sales = Sale.objects.filter(tenant=user.tenant).order_by('-timestamp')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/db/models/query.py", line 1772, in order_by
+    obj.query.add_ordering(*field_names)
+  File "/app/venv/lib/python3.12/site-packages/django/db/models/sql/query.py", line 2343, in add_ordering
+    self.names_to_path(item.split(LOOKUP_SEP), self.model._meta)
+  File "/app/venv/lib/python3.12/site-packages/django/db/models/sql/query.py", line 1842, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'timestamp' into field. Choices are: balance_due, branch, branch_id, created_at, discount, id, items, payment_mode, status, tenant, tenant_id, total_amount
+[01/Jul/2026 17:51:31] "GET /inventory/sales/ HTTP/1.1" 500 80363
+[01/Jul/2026 17:54:23] "GET /login/ HTTP/1.1" 200 2658
+[01/Jul/2026 17:54:23] "GET /static/core/css/style.css HTTP/1.1" 200 3503
+[01/Jul/2026 17:54:24] "POST /login/ HTTP/1.1" 302 0
+[01/Jul/2026 17:54:24] "GET /inventory/ HTTP/1.1" 200 18255
+Internal Server Error: /inventory/sales/
+Traceback (most recent call last):
+  File "/app/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/core/views.py", line 518, in sales_report
+    sales = Sale.objects.filter(tenant=user.tenant).order_by('-timestamp')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/db/models/query.py", line 1772, in order_by
+    obj.query.add_ordering(*field_names)
+  File "/app/venv/lib/python3.12/site-packages/django/db/models/sql/query.py", line 2343, in add_ordering
+    self.names_to_path(item.split(LOOKUP_SEP), self.model._meta)
+  File "/app/venv/lib/python3.12/site-packages/django/db/models/sql/query.py", line 1842, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'timestamp' into field. Choices are: balance_due, branch, branch_id, created_at, discount, id, items, payment_mode, status, tenant, tenant_id, total_amount
+[01/Jul/2026 17:54:25] "GET /inventory/sales/ HTTP/1.1" 500 80363
+[01/Jul/2026 17:55:46] "GET /login/ HTTP/1.1" 200 2658
+[01/Jul/2026 17:55:46] "GET /static/core/css/style.css HTTP/1.1" 200 3503
+[01/Jul/2026 17:55:47] "POST /login/ HTTP/1.1" 302 0
+[01/Jul/2026 17:55:47] "GET /inventory/ HTTP/1.1" 200 18255
+Internal Server Error: /inventory/sales/
+Traceback (most recent call last):
+  File "/app/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/core/views.py", line 518, in sales_report
+    sales = Sale.objects.filter(tenant=user.tenant).order_by('-timestamp')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/venv/lib/python3.12/site-packages/django/db/models/query.py", line 1772, in order_by
+    obj.query.add_ordering(*field_names)
+  File "/app/venv/lib/python3.12/site-packages/django/db/models/sql/query.py", line 2343, in add_ordering
+    self.names_to_path(item.split(LOOKUP_SEP), self.model._meta)
+  File "/app/venv/lib/python3.12/site-packages/django/db/models/sql/query.py", line 1842, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'timestamp' into field. Choices are: balance_due, branch, branch_id, created_at, discount, id, items, payment_mode, status, tenant, tenant_id, total_amount
+[01/Jul/2026 17:55:47] "GET /inventory/sales/ HTTP/1.1" 500 80363
+/app/core/views.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+July 01, 2026 - 17:42:29
+Django version 6.0.6, using settings 'pos_system.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Watching for file changes with StatReloader
+[01/Jul/2026 17:58:32] "GET /login/ HTTP/1.1" 200 2658
+[01/Jul/2026 17:58:32] "GET /static/core/css/style.css HTTP/1.1" 200 3503
+[01/Jul/2026 17:58:33] "POST /login/ HTTP/1.1" 302 0
+[01/Jul/2026 17:58:33] "GET /inventory/ HTTP/1.1" 200 18255
+[01/Jul/2026 17:58:33] "GET /inventory/sales/ HTTP/1.1" 200 2712
+[01/Jul/2026 17:59:51] "GET /login/ HTTP/1.1" 200 2658
+[01/Jul/2026 17:59:51] "GET /static/core/css/style.css HTTP/1.1" 200 3503
+[01/Jul/2026 17:59:52] "POST /login/ HTTP/1.1" 302 0
+[01/Jul/2026 17:59:52] "GET /inventory/ HTTP/1.1" 200 18255
+[01/Jul/2026 17:59:52] "GET /inventory/sales/ HTTP/1.1" 200 2712
