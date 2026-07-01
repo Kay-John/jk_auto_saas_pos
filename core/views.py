@@ -39,7 +39,7 @@ def register_screen(request):
                         name=form.cleaned_data['business_name'],
                         currency=form.cleaned_data['currency'],
                         subscription_status='trial',
-                        trial_ends_at=timezone.now() + timedelta(days=14)
+                        trial_end_date=timezone.now() + timedelta(days=7)
                     )
 
                     # 2. Create Default Branch
@@ -528,3 +528,16 @@ def sales_report(request):
         sales_page = paginator.page(1)
 
     return render(request, 'core/sales_report.html', {'sales': sales_page})
+
+def billing_page(request):
+    user = request.user
+    tenant = user.tenant
+
+    # Restrict to Tenant Admin (Cashiers shouldn't see details, just be blocked)
+    if user.role != 'TENANT_ADMIN':
+        return render(request, 'core/403.html', status=403)
+
+    return render(request, 'core/billing.html', {
+        'tenant': tenant,
+        'days_left': (tenant.trial_end_date - timezone.now()).days if tenant.trial_end_date else 0
+    })

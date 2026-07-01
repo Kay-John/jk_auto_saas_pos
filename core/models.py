@@ -4,10 +4,23 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 
 class Tenant(models.Model):
+    STATUS_CHOICES = [
+        ('trial', 'Trial'),
+        ('active', 'Active'),
+        ('past_due', 'Past Due'),
+        ('suspended', 'Suspended')
+    ]
+    PLAN_CHOICES = [
+        ('basic', 'Basic'),
+        ('premium', 'Premium')
+    ]
+
     name = models.CharField(max_length=255)
     currency = models.CharField(max_length=10, default='UGX')
-    subscription_status = models.CharField(max_length=20, default='trial')
-    trial_ends_at = models.DateTimeField(null=True, blank=True)
+    subscription_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='trial')
+    current_plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default='basic')
+    trial_start_date = models.DateTimeField(default=timezone.now)
+    trial_end_date = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

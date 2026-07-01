@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>Subscription & Billing | JK-AutoPOS</title>
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <style>
+        .billing-card {
+            max-width: 600px;
+            margin: 50px auto;
+            text-align: center;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .status-trial { background: #BF6D00; color: white; }
+        .status-active { background: #494A20; color: white; }
+        .status-past_due { background: #842400; color: white; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">JK-AutoPOS</div>
+        <nav>
+             <a href="{% url 'logout' %}" style="color: white;">Logout</a>
+        </nav>
+    </header>
+
+    <div class="main-container">
+        <div class="card billing-card">
+            <h1>Subscription & Billing</h1>
+
+            <div class="status-badge status-{{ tenant.subscription_status }}">
+                Status: {{ tenant.get_subscription_status_display }}
+            </div>
+
+            {% if tenant.subscription_status == 'trial' %}
+                <p>Your free trial ends on <strong>{{ tenant.trial_end_date|date:"F j, Y" }}</strong>.</p>
+                {% if days_left < 0 %}
+                    <h2 style="color: var(--modifier-secondary);">Trial Expired</h2>
+                    <p>Please activate your subscription to continue accessing the POS and Inventory systems.</p>
+                {% else %}
+                    <p>You have {{ days_left }} days left in your trial.</p>
+                {% endif %}
+            {% endif %}
+
+            <hr style="margin: 30px 0; border: 0; border-top: 1px dashed var(--accent-primary);">
+
+            <h3>Select a Plan</h3>
+            <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;">
+                <div class="card" style="flex: 1; border: 1px solid var(--accent-primary);">
+                    <h4>Basic</h4>
+                    <p>100,000 UGX / Month</p>
+                    <button class="btn-primary" disabled>Coming Soon</button>
+                </div>
+                <div class="card" style="flex: 1; border: 1px solid var(--accent-primary);">
+                    <h4>Premium</h4>
+                    <p>250,000 UGX / Month</p>
+                    <button class="btn-primary" disabled>Coming Soon</button>
+                </div>
+            </div>
+
+            <div style="margin-top: 40px; font-size: 0.9rem; opacity: 0.8;">
+                Payment methods: Mobile Money (MTN/Airtel), Visa, Mastercard.
+            </div>
+        </div>
+    </div>
+</body>
+</html>
