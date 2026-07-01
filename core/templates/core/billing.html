@@ -21,17 +21,40 @@
         .status-trial { background: #BF6D00; color: white; }
         .status-active { background: #494A20; color: white; }
         .status-past_due { background: #842400; color: white; }
+
+        .plan-box {
+            border: 2px solid var(--accent-primary);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            background: rgba(191, 109, 0, 0.05);
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--accent-primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     <header>
         <div class="logo">JK-AutoPOS</div>
         <nav>
+             <a href="{% url 'inventory_dashboard' %}" style="color: white; margin-right: 15px;">Dashboard</a>
              <a href="{% url 'logout' %}" style="color: white;">Logout</a>
         </nav>
     </header>
 
     <div class="main-container">
+        {% csrf_token %}
         <div class="card billing-card">
             <h1>Subscription & Billing</h1>
 
@@ -39,36 +62,121 @@
                 Status: {{ tenant.get_subscription_status_display }}
             </div>
 
-            {% if tenant.subscription_status == 'trial' %}
-                <p>Your free trial ends on <strong>{{ tenant.trial_end_date|date:"F j, Y" }}</strong>.</p>
-                {% if days_left < 0 %}
-                    <h2 style="color: var(--modifier-secondary);">Trial Expired</h2>
-                    <p>Please activate your subscription to continue accessing the POS and Inventory systems.</p>
-                {% else %}
-                    <p>You have {{ days_left }} days left in your trial.</p>
-                {% endif %}
+            <p>Your subscription ends on <strong>{{ tenant.trial_end_date|date:"F j, Y" }}</strong>.</p>
+
+            {% if tenant.subscription_status != 'active' or days_left < 30 %}
+                <div class="plan-box">
+                    <h2>Annual Premium Access</h2>
+                    <h1 style="color: var(--accent-primary);">500,000 UGX <small>/ Year</small></h1>
+                    <p style="font-size: 0.9rem;">Get full access to multi-branch management, bulk imports, and advanced analytics.</p>
+
+                    <div id="payment-form" style="margin-top: 30px; text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;">
+                        <div class="form-group">
+                            <label>Select Network</label>
+                            <select id="network" style="width: 100%;">
+                                <option value="MTN">MTN Mobile Money</option>
+                                <option value="AIRTEL">Airtel Money</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Mobile Money Phone Number</label>
+                            <input type="text" id="phone_number" placeholder="e.g. 0772123456" style="width: 100%;">
+                        </div>
+                        <button id="pay-btn" class="btn-primary" style="width: 100%; margin-top: 20px;">Initiate Payment</button>
+                    </div>
+
+                    <div id="payment-loading" style="display: none; margin-top: 30px;">
+                        <div class="loader"></div>
+                        <p><strong>Please check your phone...</strong></p>
+                        <p>We've sent a push notification to your phone. Enter your MM PIN to authorize the payment.</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card" style="background: rgba(73, 74, 32, 0.1); border-color: #494A20;">
+                    <h3>✓ Your account is fully active.</h3>
+                    <p>Thank you for your subscription! You have full access to all JK-AutoPOS features.</p>
+                </div>
             {% endif %}
 
-            <hr style="margin: 30px 0; border: 0; border-top: 1px dashed var(--accent-primary);">
-
-            <h3>Select a Plan</h3>
-            <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;">
-                <div class="card" style="flex: 1; border: 1px solid var(--accent-primary);">
-                    <h4>Basic</h4>
-                    <p>100,000 UGX / Month</p>
-                    <button class="btn-primary" disabled>Coming Soon</button>
-                </div>
-                <div class="card" style="flex: 1; border: 1px solid var(--accent-primary);">
-                    <h4>Premium</h4>
-                    <p>250,000 UGX / Month</p>
-                    <button class="btn-primary" disabled>Coming Soon</button>
-                </div>
-            </div>
-
-            <div style="margin-top: 40px; font-size: 0.9rem; opacity: 0.8;">
-                Payment methods: Mobile Money (MTN/Airtel), Visa, Mastercard.
+            <div style="margin-top: 40px; font-size: 0.8rem; opacity: 0.7;">
+                Payments are securely processed via Flutterwave.
             </div>
         </div>
     </div>
+
+    <script>
+        const payBtn = document.getElementById('pay-btn');
+        const paymentForm = document.getElementById('payment-form');
+        const paymentLoading = document.getElementById('payment-loading');
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        if (payBtn) {
+            payBtn.addEventListener('click', async () => {
+                const network = document.getElementById('network').value;
+                const phoneNumber = document.getElementById('phone_number').value;
+
+                if (!phoneNumber) {
+                    alert('Please enter your phone number');
+                    return;
+                }
+
+                payBtn.disabled = true;
+                payBtn.innerText = 'Processing...';
+
+                try {
+                    const response = await fetch('{% url "initiate_payment" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({ network, phone_number: phoneNumber })
+                    });
+
+                    const data = await response.json();
+                    if (data.status === 'success') {
+                        paymentForm.style.display = 'none';
+                        paymentLoading.style.display = 'block';
+
+                        // Start polling
+                        pollStatus(data.tx_ref);
+                    } else {
+                        alert('Error: ' + data.message);
+                        payBtn.disabled = false;
+                        payBtn.innerText = 'Initiate Payment';
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Network error. Please try again.');
+                    payBtn.disabled = false;
+                    payBtn.innerText = 'Initiate Payment';
+                }
+            });
+        }
+
+        async function pollStatus(txRef) {
+            const interval = setInterval(async () => {
+                try {
+                    const response = await fetch(`/billing/check-status/${txRef}/`);
+                    const data = await response.json();
+
+                    if (data.status === 'success') {
+                        clearInterval(interval);
+                        alert('Payment Successful! Your account has been activated.');
+                        window.location.reload();
+                    } else if (data.status === 'failed') {
+                        clearInterval(interval);
+                        alert('Payment Failed. Please try again.');
+                        paymentForm.style.display = 'block';
+                        paymentLoading.style.display = 'none';
+                        payBtn.disabled = false;
+                        payBtn.innerText = 'Initiate Payment';
+                    }
+                } catch (err) {
+                    console.error('Polling error:', err);
+                }
+            }, 3000); // Poll every 3 seconds
+        }
+    </script>
 </body>
 </html>

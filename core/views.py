@@ -10,11 +10,12 @@ from django.db import transaction
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from .decorators import role_required
 from decimal import Decimal
 from django.db.models import Sum, F
-from .models import Product, ProductUnit, Branch, BranchStock, Supplier, StockTransaction, Sale, SaleItem, Tenant, UserProfile, Expense
+from .models import Product, ProductUnit, Branch, BranchStock, Supplier, StockTransaction, Sale, SaleItem, Tenant, UserProfile, Expense, Payment
 from .forms import TenantSignupForm, ExpenseForm, ProductForm
 
 def landing_page(request):
@@ -545,3 +546,75 @@ def billing_page(request):
         'tenant': tenant,
         'days_left': days_left
     })
+
+@login_required
+def initiate_payment(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        network = data.get('network')
+        phone_number = data.get('phone_number')
+
+        if not network or not phone_number:
+            return JsonResponse({'status': 'error', 'message': 'Missing data'}, status=400)
+
+        tx_ref = f"JK-POS-{uuid.uuid4().hex[:8]}"
+
+        # Create Payment Record
+        Payment.objects.create(
+            tenant=request.user.tenant,
+            tx_ref=tx_ref,
+            amount=Decimal('500000'),
+            phone_number=phone_number,
+            network=network
+        )
+
+        # MOCK API CALL TO FLUTTERWAVE
+        # In production, use requests.post('https://api.flutterwave.com/v3/charges?type=mobile_money_uganda', ...)
+        # print(f"Initiating Flutterwave Charge: {tx_ref}")
+
+        return JsonResponse({
+            'status': 'success',
+            'tx_ref': tx_ref,
+            'message': 'Payment initiated. Please check your phone for the PIN prompt.'
+        })
+    return JsonResponse({'status': 'error'}, status=405)
+
+@csrf_exempt
+def payment_webhook(request):
+    # In production, verify Flutterwave signature!
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            # Flutterwave sends data in 'data' key for webhooks
+            event_data = data.get('data', {})
+            tx_ref = event_data.get('tx_ref')
+            status = event_data.get('status')
+
+            if status == 'successful' and tx_ref:
+                payment = Payment.objects.get(tx_ref=tx_ref)
+                if payment.status != 'success':
+                    with transaction.atomic():
+                        payment.status = 'success'
+                        payment.save()
+
+                        # Activate Tenant
+                        tenant = payment.tenant
+                        tenant.subscription_status = 'active'
+                        # Extend trial/subscription by 365 days
+                        if not tenant.trial_end_date or tenant.trial_end_date < timezone.now():
+                             tenant.trial_end_date = timezone.now() + timedelta(days=365)
+                        else:
+                             tenant.trial_end_date += timedelta(days=365)
+                        tenant.save()
+            return JsonResponse({'status': 'ok'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error'}, status=405)
+
+@login_required
+def check_payment_status(request, tx_ref):
+    try:
+        payment = Payment.objects.get(tx_ref=tx_ref, tenant=request.user.tenant)
+        return JsonResponse({'status': payment.status})
+    except Payment.DoesNotExist:
+        return JsonResponse({'status': 'not_found'}, status=404)

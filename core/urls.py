@@ -16,4 +16,7 @@ urlpatterns = [
     path('inventory/log-expense/', views.log_expense, name='log_expense'),
     path('inventory/sales/', views.sales_report, name='sales_report'),
     path('billing/', views.billing_page, name='billing_page'),
+    path('billing/initiate-payment/', views.initiate_payment, name='initiate_payment'),
+    path('billing/webhook/', views.payment_webhook, name='payment_webhook'),
+    path('billing/check-status/<str:tx_ref>/', views.check_payment_status, name='check_payment_status'),
 ]
