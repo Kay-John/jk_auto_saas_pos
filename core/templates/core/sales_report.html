@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Sales Report | JK-AutoPOS</title>
+    <link rel="manifest" href="{% static "core/manifest.json" %}">
+    <meta name="theme-color" content="#BF6D00">
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
 </head>
 <body>
@@ -56,5 +58,10 @@
             </div>
         </div>
     </div>
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("{% static "core/js/sw.js" %}");
+        }
+    </script>
 </body>
 </html>

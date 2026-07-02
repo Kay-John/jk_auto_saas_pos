@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="{% static "core/manifest.json" %}">
+    <meta name="theme-color" content="#BF6D00">
     <title>JK-AutoPOS | The Complete Multi-Branch Automated POS System</title>
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
     <style>
@@ -184,7 +186,7 @@
         <nav>
             <a href="#features">Features</a>
             <a href="{% url 'login' %}" class="btn-login">Login</a>
-            <a href="{% url 'register_screen' %}" class="btn-trial">Start Free Trial</a>
+            <a href="{% url 'register_screen' %}" class="btn-trial">Start Your Workspace</a>
         </nav>
     </header>
 
@@ -197,7 +199,7 @@
                 and deep financial insights in one powerful, resilient platform.
             </p>
             <div class="hero-ctas">
-                <a href="{% url 'register_screen' %}" class="cta-primary">Start Free Trial Now</a>
+                <a href="{% url 'register_screen' %}" class="cta-primary">Start Your Workspace Now</a>
                 <a href="#features" class="cta-secondary">Explore Features</a>
             </div>
         </section>
@@ -230,5 +232,10 @@
     <footer>
         <p>&copy; 2026 JK-AutoPOS. Built for Resilience. Built for Growth.</p>
     </footer>
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("{% static "core/js/sw.js" %}");
+        }
+    </script>
 </body>
 </html>

@@ -1,0 +1,21 @@
+{
+  "name": "JK-AutoPOS",
+  "short_name": "AutoPOS",
+  "description": "The Complete Multi-Branch Automated POS System",
+  "start_url": "/pos/",
+  "display": "standalone",
+  "background_color": "#2C1A11",
+  "theme_color": "#BF6D00",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192x192.png?text=POS",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512.png?text=JK-AutoPOS",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

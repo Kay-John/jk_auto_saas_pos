@@ -7,23 +7,35 @@ class SubscriptionMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.user.is_authenticated:
-            tenant = request.user.tenant
-            # Only block if tenant exists (it should for all operational users)
-            if tenant:
-                # Paths that require active subscription
-                protected_prefixes = ['/pos/', '/inventory/']
-                is_protected = any(request.path.startswith(prefix) for prefix in protected_prefixes)
+        path = request.path
 
-                # Check if trial has ended
+        # 1. Operational Guard
+        # Using a tuple instead of list might be slightly faster
+        premium_prefixes = ('/pos/', '/inventory/')
+        is_premium = any(path.startswith(prefix) for prefix in premium_prefixes)
+
+        if is_premium:
+            if not request.user.is_authenticated:
+                return redirect('login')
+
+            tenant = getattr(request.user, 'tenant', None)
+            if tenant:
                 trial_ended = tenant.trial_end_date and tenant.trial_end_date < timezone.now()
                 not_active = tenant.subscription_status != 'active'
 
-                if is_protected and trial_ended and not_active:
-                    # Redirect to billing
-                    # But allow Tenant Admin to see the billing page
-                    if request.path != reverse('billing_page'):
-                        return redirect('billing_page')
+                if trial_ended and not_active:
+                    return redirect('billing_page')
+
+        # 2. Billing Guard
+        billing_url = reverse('billing_page')
+        if path == billing_url:
+            if not request.user.is_authenticated:
+                return redirect('login')
+
+            tenant = getattr(request.user, 'tenant', None)
+            # If account is active, redirect away from billing to POS
+            if tenant and tenant.subscription_status == 'active':
+                return redirect('pos_screen')
 
         response = self.get_response(request)
         return response

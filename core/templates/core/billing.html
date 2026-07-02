@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Subscription & Billing | JK-AutoPOS</title>
+    <link rel="manifest" href="{% static "core/manifest.json" %}">
+    <meta name="theme-color" content="#BF6D00">
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
     <style>
         .billing-card {
@@ -177,6 +179,11 @@
                     console.error('Polling error:', err);
                 }
             }, 3000); // Poll every 3 seconds
+        }
+    </script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("{% static "core/js/sw.js" %}");
         }
     </script>
 </body>
