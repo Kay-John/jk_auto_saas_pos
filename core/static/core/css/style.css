@@ -184,3 +184,18 @@ select, input[type="number"] {
     padding: 5px;
     border-radius: 4px;
 }
+
+/* Billing specific tweaks */
+.billing-card {
+    min-height: 500px;
+    height: auto !important;
+}
+
+input[type="text"], input[type="email"], input[type="password"], select {
+    background-color: var(--input-bg);
+    color: #2C1A11;
+    border: 1px solid rgba(0,0,0,0.1);
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 1rem;
+}

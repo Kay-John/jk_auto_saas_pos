@@ -531,6 +531,7 @@ def sales_report(request):
 
     return render(request, 'core/sales_report.html', {'sales': sales_page})
 
+@login_required
 def billing_page(request):
     user = request.user
     tenant = user.tenant

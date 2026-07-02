@@ -135,3 +135,4 @@ STORAGES = {
 }
 
 AUTH_USER_MODEL = 'core.UserProfile'
+LOGIN_URL = 'login'

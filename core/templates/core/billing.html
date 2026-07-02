@@ -70,20 +70,20 @@
                     <h1 style="color: var(--accent-primary);">500,000 UGX <small>/ Year</small></h1>
                     <p style="font-size: 0.9rem;">Get full access to multi-branch management, bulk imports, and advanced analytics.</p>
 
-                    <div id="payment-form" style="margin-top: 30px; text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;">
-                        <div class="form-group">
+                    <form id="payment-form" style="margin-top: 30px; text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;">
+                        <div class="form-group" style="margin-bottom: 15px;">
                             <label>Select Network</label>
-                            <select id="network" style="width: 100%;">
+                            <select id="network" style="width: 100%;" required>
                                 <option value="MTN">MTN Mobile Money</option>
                                 <option value="AIRTEL">Airtel Money</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="margin-bottom: 15px;">
                             <label>Mobile Money Phone Number</label>
-                            <input type="text" id="phone_number" placeholder="e.g. 0772123456" style="width: 100%;">
+                            <input type="text" id="phone_number" placeholder="e.g. 0772123456" style="width: 100%;" required>
                         </div>
-                        <button id="pay-btn" class="btn-primary" style="width: 100%; margin-top: 20px;">Initiate Payment</button>
-                    </div>
+                        <button type="submit" id="pay-btn" class="btn-primary" style="width: 100%; margin-top: 20px;">Initiate Payment</button>
+                    </form>
 
                     <div id="payment-loading" style="display: none; margin-top: 30px;">
                         <div class="loader"></div>
@@ -110,8 +110,9 @@
         const paymentLoading = document.getElementById('payment-loading');
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-        if (payBtn) {
-            payBtn.addEventListener('click', async () => {
+        if (paymentForm) {
+            paymentForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
                 const network = document.getElementById('network').value;
                 const phoneNumber = document.getElementById('phone_number').value;
 
